@@ -51,7 +51,12 @@ export default function Page() {
         <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
           <p className="font-mono text-4xl font-medium">Devfest-2024</p>
           <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-            <li className="mb-2">Your application Status: <span className="font-semibold text-xl text-blue-500 font-mono">{applicationStatus}</span></li>
+            <li className="mb-2">Your application Status: 
+              <span className={`font-semibold text-xl font-mono ${applicationStatus === 'processing' ? 'text-yellow-500' : applicationStatus === 'rejected' ? 'text-red-500' : 'text-blue-500'}`}
+              >
+                {applicationStatus}
+                </span>
+              </li>
           </ol>
         </main>
         <Toaster />

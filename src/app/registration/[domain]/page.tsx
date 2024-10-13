@@ -15,6 +15,7 @@ export type FormDataProps = {
     volunteeringInterest: string;
     expectedOutcome: string;
     applicationStatus: 'processing' | 'approved' | 'rejected';
+    domain: string[]
 };
 
 export default function page({ params }: { params: { domain: string } }) {
@@ -29,6 +30,7 @@ export default function page({ params }: { params: { domain: string } }) {
         volunteeringInterest: '',
         expectedOutcome: '',
         applicationStatus: 'processing',
+        domain: [domain]
     });
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -74,6 +76,7 @@ export default function page({ params }: { params: { domain: string } }) {
             router.push("/participation");
         }
     };
+
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
