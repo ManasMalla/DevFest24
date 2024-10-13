@@ -1,12 +1,14 @@
 'use client';
 import formFields from "@/lib/data/RegDetails";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-type FormDataProps = {
+export type FormDataProps = {
     phoneNumber: string;
     volunteerExperience: string;
     skillsOrTalents: string;
@@ -16,7 +18,8 @@ type FormDataProps = {
 };
 
 export default function page({ params }: { params: { domain: string } }) {
-    const { data : session } = useSession();
+    const router = useRouter();
+    const { data: session } = useSession();
     const userId = (session?.user as { id: string })?.id;
     const domain = decodeURIComponent(params.domain)
     const [formData, setFormData] = useState<FormDataProps>({
@@ -28,24 +31,23 @@ export default function page({ params }: { params: { domain: string } }) {
         applicationStatus: 'processing',
     });
 
-    const handleSubmit = async (e: { preventDefault: () => void }) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
+
         const userRef = doc(collection(db, 'users'), userId);
-    
+
         try {
             const userSnapshot = await getDoc(userRef);
-    
+
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.data();
-    
+
                 if (userData.registration) {
                     toast.error("Registration with this email already exists.");
                     return;
                 }
             }
-    
-            toast.promise(
+            await toast.promise(
                 setDoc(userRef, { registrationDetails: formData, registration: true }, { merge: true }),
                 {
                     loading: 'Submitting Registration...',
@@ -53,9 +55,23 @@ export default function page({ params }: { params: { domain: string } }) {
                     error: 'Please try again!'
                 }
             );
+
+            // send form to user's email
+            const email = session?.user?.email;
+            console.log("Sending POST request to /api/volunteer/sendForm...");
+            const emailRes = await axios.post('/api/volunteer/sendForm', { email, data: formData });
+            console.log("Response:", emailRes);
+            if (emailRes.status === 200) {
+                toast("Confirmation email sent!", { icon: '📩' });
+            } else {
+                toast.error("Failed to send email.");
+            }
         } catch (error) {
             console.error("Error submitting registration:", error);
             toast.error("An unexpected error occurred. Please try again.");
+        }
+        finally{
+            router.push("/participation");
         }
     };
 
@@ -85,7 +101,7 @@ export default function page({ params }: { params: { domain: string } }) {
                                     <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-400">{item.label}</label>
                                     <input
                                         type={item.type}
-                                        id={item.label}
+                                        id={item.name}
                                         name={item.name}
                                         value={formData[item.name as keyof FormDataProps] || ''} onChange={(e) => handleChange(e)}
                                         className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400"
@@ -102,7 +118,7 @@ export default function page({ params }: { params: { domain: string } }) {
 
                 </div>
             </div>
-            <Toaster/>
+            <Toaster />
         </div>
     );
 };
