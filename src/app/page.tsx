@@ -1,23 +1,68 @@
-'use client';
+"use client";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 
 export default function Home() {
   const router = useRouter();
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <p className="font-mono text-4xl font-medium">Devfest-2024</p>
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">Get Ready to be the part of the Everseen event ✨
-          </li>
-        </ol>
-
-        <div onClick={() => router.push('/api/auth/signin')} className="flex justify-center items-center rounded-3xl space-x-2 bg-white px-7 py-2 w-fit text-center cursor-pointer transition-all duration-500 hover:scale-105">
-          <FcGoogle className="size-7"/>
-          <p className="text-black font-medium text-sm sm:text-xs">Continue With Google</p>
+    <div className="p-4 flex flex-col items-center">
+      {
+        // Hero section
+        <div className="mt-14 mb-12 w-[75%] flex flex-col items-center">
+          <img
+            src="/images/devfest_vizag_headlock.svg"
+            className="w-full mb-4"
+          />
+          <p>
+            GITAM University | <span className="font-bold">December 6-7</span>
+          </p>
         </div>
-      </main>
+      }
+      {
+        //CTA
+        <div className="w-full flex justify-evenly">
+          <button className="font-medium px-7 text-[14px] py-[10px] border-black border-2 rounded-full">
+            Coming soon...
+          </button>
+          <a className="font-medium px-7 text-[14px] py-[10px] border-black border-2 bg-[#F9AB00] rounded-full">
+            Apply to be a volunteer
+          </a>
+        </div>
+      }
+      {
+        // Gallery
+        <div className="my-4">
+          <img
+            src="https://github.com/ManasMalla.png"
+            className="aspect-[1.225] w-full object-cover rounded-3xl border-2 border-black"
+          />
+          <div className="grid grid-cols-2 my-4 gap-4 w-full">
+            <img
+              src="https://github.com/ManasMalla.png"
+              className="aspect-[1.67] grow object-cover rounded-xl border-2 border-black saturate-0"
+            />
+            <img
+              src="https://github.com/ManasMalla.png"
+              className="aspect-[1.67] grow object-cover rounded-xl border-2 border-black saturate-0"
+            />
+          </div>
+        </div>
+      }
     </div>
   );
 }
+
+/*
+<div
+          onClick={() => {
+            console.log("Hello");
+            router.push("/participation");
+          }}
+          className="flex justify-center items-center rounded-3xl space-x-2 bg-white px-7 py-2 w-fit text-center cursor-pointer transition-all duration-500 hover:scale-105"
+        >
+          <FcGoogle className="size-7" />
+          <p className="text-black font-medium text-sm sm:text-xs">
+            Continue With Google
+          </p>
+        </div>
+*/
