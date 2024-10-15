@@ -1,4 +1,6 @@
 "use client";
+import { auth } from "@/lib/firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 
@@ -24,9 +26,20 @@ export default function Home() {
           <button className="font-medium px-7 text-[14px] py-[10px] border-black border-2 rounded-full">
             Coming soon...
           </button>
-          <a className="font-medium px-7 text-[14px] py-[10px] border-black border-2 bg-[#F9AB00] rounded-full">
+          <button
+            onClick={async () => {
+              const userCredential = await signInWithPopup(
+                auth,
+                new GoogleAuthProvider()
+              );
+              if (userCredential.user != null) {
+                router.push("/participation");
+              }
+            }}
+            className="font-medium px-7 text-[14px] py-[10px] border-black border-2 bg-[#F9AB00] rounded-full"
+          >
             Apply to be a volunteer
-          </a>
+          </button>
         </div>
       }
       {
@@ -51,18 +64,3 @@ export default function Home() {
     </div>
   );
 }
-
-/*
-<div
-          onClick={() => {
-            console.log("Hello");
-            router.push("/participation");
-          }}
-          className="flex justify-center items-center rounded-3xl space-x-2 bg-white px-7 py-2 w-fit text-center cursor-pointer transition-all duration-500 hover:scale-105"
-        >
-          <FcGoogle className="size-7" />
-          <p className="text-black font-medium text-sm sm:text-xs">
-            Continue With Google
-          </p>
-        </div>
-*/
