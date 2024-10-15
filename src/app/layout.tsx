@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthContextProvider } from "./context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,30 +29,34 @@ export default function RootLayout({
         />
       </head>
       <body className={`antialiased flex flex-col`}>
-        <nav className="p-6 flex justify-between items-center">
-          <img src="/logos/gdg_logo.svg" className="h-8" />
-          <img
-            src="https://github.com/ManasMalla.png"
-            className="size-12 rounded-full object-cover border-black border-[2px]"
-          />
-        </nav>
-        {children}
-        <div className="h-24" />
-        <div className="fixed bottom-0 h-[90px] flex items-center bg-white shadow-2xl w-full">
-          <div className="grow cursor-pointer flex flex-col gap-2 items-center text-blue-500">
-            <span className="material-symbols-outlined">home</span>
-            <p>Home</p>
-          </div>
-          <div className="grow cursor-pointer flex flex-col gap-2 items-center">
-            <span className="material-symbols-outlined">info</span>
-            <p>TBA</p>
-          </div>
+        <AuthContextProvider>
+          <>
+            <nav className="p-6 flex justify-between items-center">
+              <img src="/logos/gdg_logo.svg" className="h-8" />
+              <img
+                src="https://github.com/ManasMalla.png"
+                className="size-12 rounded-full object-cover border-black border-[2px]"
+              />
+            </nav>
+            {children}
+            <div className="h-24" />
+            <div className="fixed bottom-0 h-[90px] flex items-center bg-white shadow-2xl w-full">
+              <div className="grow cursor-pointer flex flex-col gap-2 items-center text-blue-500">
+                <span className="material-symbols-outlined">home</span>
+                <p>Home</p>
+              </div>
+              <div className="grow cursor-pointer flex flex-col gap-2 items-center">
+                <span className="material-symbols-outlined">info</span>
+                <p>TBA</p>
+              </div>
 
-          <div className="grow cursor-pointer flex flex-col gap-2 items-center">
-            <span className="material-symbols-outlined">info</span>
-            <p>TBA</p>
-          </div>
-        </div>
+              <div className="grow cursor-pointer flex flex-col gap-2 items-center">
+                <span className="material-symbols-outlined">info</span>
+                <p>TBA</p>
+              </div>
+            </div>
+          </>
+        </AuthContextProvider>
       </body>
     </html>
   );

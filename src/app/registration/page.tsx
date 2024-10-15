@@ -1,4 +1,5 @@
 "use client";
+import { auth } from "@/lib/firebase";
 import formFields from "@/lib/data/RegDetails";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { db } from "@/lib/firebase";
@@ -17,12 +18,11 @@ export type FormDataProps = {
   domain: string[];
 };
 
-export default function page({ params }: { params: { domain: string } }) {
+export default function page() {
   const router = useRouter();
   //   const { data: session } = useSession();
   //TODO
-  const userId = "";
-  const domain = decodeURIComponent(params.domain);
+  const userId = auth?.currentUser?.uid ||'';
   const [formData, setFormData] = useState<FormDataProps>({
     phoneNumber: "",
     volunteerExperience: "",
@@ -30,7 +30,7 @@ export default function page({ params }: { params: { domain: string } }) {
     volunteeringInterest: "",
     expectedOutcome: "",
     applicationStatus: "processing",
-    domain: [domain],
+    domain: [],
   });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -52,7 +52,7 @@ export default function page({ params }: { params: { domain: string } }) {
       await toast.promise(
         setDoc(
           userRef,
-          { registrationDetails: formData, registration: true },
+          { registrationDetails: formData, registration: true, name: auth.currentUser?.displayName, email: auth.currentUser?.email },
           { merge: true }
         ),
         {
@@ -99,7 +99,7 @@ export default function page({ params }: { params: { domain: string } }) {
       <div className="w-full p-4">
         <h5 className="mb-5 text-center text-2xl font-semibold text-neutral-200">
           📃Fill in your details |{" "}
-          <span className="font-mono text-xl">{domain}</span>
+          {/* <span className="font-mono text-xl">{domain}</span> */}
         </h5>
 
         <div className="flex flex-col justify-center items-center">

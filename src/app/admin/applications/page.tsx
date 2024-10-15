@@ -1,9 +1,9 @@
 "use client";
 import { db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import {
   collection,
   doc,
-  getDocs,
   onSnapshot,
   updateDoc,
 } from "firebase/firestore";
@@ -32,14 +32,9 @@ type ApplicationCollection = {
 
 export default function page() {
   const [showModal, setShowModal] = useState(false);
-  const [selectedApplication, setSelectedApplication] =
-    useState<ApplicationCollection | null>(null);
-  const [allApplications, setAllApplications] = useState<
-    ApplicationCollection[]
-  >([]);
-  const [filteredApplications, setFilteredApplications] = useState<
-    ApplicationCollection[]
-  >([]);
+  const [selectedApplication, setSelectedApplication] = useState<ApplicationCollection | null>(null);
+  const [allApplications, setAllApplications] = useState<ApplicationCollection[]>([]);
+  const [filteredApplications, setFilteredApplications] = useState<ApplicationCollection[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDomain, setSelectedDomain] = useState<string>("All");
 
@@ -154,14 +149,13 @@ export default function page() {
                 </td>
                 <td className="px-6 py-4">{item.registrationDetails.domain}</td>
                 <td
-                  className={`x-6 py-4 font-mono ${
-                    item.registrationDetails.applicationStatus === "processing"
+                  className={`x-6 py-4 font-mono ${item.registrationDetails.applicationStatus === "processing"
                       ? "text-yellow-500"
                       : item.registrationDetails.applicationStatus ===
                         "rejected"
-                      ? "text-red-500"
-                      : "text-green-500"
-                  }`}
+                        ? "text-red-500"
+                        : "text-green-500"
+                    }`}
                 >
                   {item.registrationDetails.applicationStatus}
                 </td>
@@ -200,7 +194,7 @@ function PopupModal({
   }, []);
 
   const updateApplicationStatus = async (status: string) => {
-    const userRef = doc(collection(db, "users"), application.uid);
+    const userRef = doc(collection(db, "users"), auth.currentUser?.uid || '');
     await toast.promise(
       updateDoc(userRef, { "registrationDetails.applicationStatus": status }),
       {
@@ -245,7 +239,7 @@ function PopupModal({
               <p className="w-full text-sm font-normal tracking-wide text-white/60 text-wrap">
                 {
                   application?.registrationDetails[
-                    item.name as keyof FormDataProps
+                  item.name as keyof FormDataProps
                   ]
                 }
               </p>
@@ -257,11 +251,10 @@ function PopupModal({
           <button
             onClick={() => updateApplicationStatus("approved")}
             type="button"
-            className={`focus:outline-none text-white bg-green-600/80 hover:bg-green-700 focus:ring-4 focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${
-              application.registrationDetails.applicationStatus === "approved"
+            className={`focus:outline-none text-white bg-green-600/80 hover:bg-green-700 focus:ring-4 focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "approved"
                 ? "opacity-50 cursor-not-allowed"
                 : ""
-            }`}
+              }`}
           >
             Approve
           </button>
@@ -269,11 +262,10 @@ function PopupModal({
           <button
             onClick={() => updateApplicationStatus("rejected")}
             type="button"
-            className={`focus:outline-none text-white bg-red-600/80 hover:bg-red-700 focus:ring-4 focus:ring-red-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${
-              application.registrationDetails.applicationStatus === "rejected"
+            className={`focus:outline-none text-white bg-red-600/80 hover:bg-red-700 focus:ring-4 focus:ring-red-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "rejected"
                 ? "opacity-50 cursor-not-allowed"
                 : ""
-            }`}
+              }`}
           >
             Reject
           </button>
