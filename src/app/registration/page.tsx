@@ -87,8 +87,7 @@ export default function page() {
     }
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleChange = (name: string, value: string) => {
     setFormData({
       ...formData,
       [name as keyof FormDataProps]: value,
@@ -109,9 +108,11 @@ export default function page() {
             {formFields.map((item, index) => (
               <div key={index} className="mb-5">
                 <OutlinedTextField
-                  // value={formData[item.name as keyof FormDataProps] || ""}
-                  // onChange={(e) => handleChange(e)}
-                  labelText={item.placeholder}
+                  value={
+                    (formData[item.name as keyof FormDataProps] as string) || ""
+                  }
+                  onValueChange={(e) => handleChange(item.name, e)}
+                  labelText={item.label}
                 />
               </div>
             ))}

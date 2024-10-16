@@ -53,62 +53,68 @@ export default function Page() {
   }
   if (registration) {
     return (
-      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-        <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-          <p className="font-mono text-4xl font-medium">Devfest-2024</p>
-          <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-            <li className="mb-2">
-              Your application Status:
-              <span
-                className={`font-semibold text-xl font-mono ${
-                  applicationStatus === "processing"
-                    ? "text-yellow-500"
-                    : applicationStatus === "rejected"
-                    ? "text-red-500"
-                    : "text-blue-500"
-                }`}
-              >
-                {applicationStatus}
-              </span>
-            </li>
-          </ol>
-        </main>
+      <div>
+        <p className="font-mono text-4xl font-medium">Devfest-2024</p>
+        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
+          <li className="mb-2">
+            Your application Status:
+            <span
+              className={`font-semibold text-xl font-mono ${
+                applicationStatus === "processing"
+                  ? "text-yellow-500"
+                  : applicationStatus === "rejected"
+                  ? "text-red-500"
+                  : "text-blue-500"
+              }`}
+            >
+              {applicationStatus}
+            </span>
+          </li>
+        </ol>
         <Toaster />
       </div>
     );
   } else {
     return (
-      <div className="px-4">
+      <div className="px-4 w-full">
         <div>
-          <div className="relative">
-            <img
-              src="/images/volunteers.jpg"
-              className="aspect-[1.677] rounded-3xl border-2 border-black object-cover"
-            />
-            <div className="h-9 w-48 rounded-tr-3xl border-r-2 border-t-2 border-black absolute -bottom-[1px] -left-[1px] bg-white" />
-            <div className="h-24 w-12 rounded-bl-xl absolute border-l-2 border-b-2 border-black -top-[1px] -right-[1px] bg-white" />
+          <div className="w-full flex flex-col md:flex-row md:gap-12">
+            <div className="relative h-max  md:min-w-[60%]">
+              <img
+                src="/images/volunteers.jpg"
+                className="aspect-[1.677] rounded-3xl border-2 border-[rgb(var(--md-sys-color-on-surface))] object-cover"
+              />
+              <div className="h-9 w-48 rounded-tr-3xl border-r-2 border-t-2 border-[rgb(var(--md-sys-color-on-surface))] absolute -bottom-[1px] -left-[1px] bg-[rgb(var(--md-sys-color-background))]" />
+              <div className="h-24 w-12 rounded-bl-xl absolute border-l-2 border-b-2 border-[rgb(var(--md-sys-color-on-surface))] -top-[1px] -right-[1px] bg-[rgb(var(--md-sys-color-background))]" />
+            </div>
+            <div className="mt-6 md:mt-0 -translate-y-10 md:translate-y-0">
+              <h2 className="text-2xl font-medium md:-translate-x-6">
+                Our Backbone.
+              </h2>
+              <h3 className="text-4xl font-bold md:-translate-x-6">
+                Our Volunteers.
+              </h3>
+              <p className="py-4 md:mb-4 lg:mb-0">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus
+                suscipit laudantium aspernatur odio id, at iste repellendus,
+                laboriosam voluptate dolore quae doloremque et beatae ipsum
+                similique deleniti sapiente in vitae?
+              </p>
+              <p className="mb-4 md:hidden lg:flex lg:mb-8">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus
+                suscipit laudantium aspernatur odio id, at iste repellendus,
+                laboriosam voluptate dolore quae doloremque et beatae ipsum
+                similique deleniti sapiente in vitae?
+              </p>
+              <a
+                href="/registration"
+                className="px-8 py-2 border-2 border-[rgb(var(--md-sys-color-on-surface))] w-max rounded-full mb-6"
+              >
+                Apply now
+              </a>
+            </div>
           </div>
-          <div className="my-6 flex flex-col -translate-y-10">
-            <h2 className="text-2xl font-medium">Our Backbone.</h2>
-            <h3 className="text-4xl font-bold">Our Volunteers.</h3>
-            <p className="py-4">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus
-              suscipit laudantium aspernatur odio id, at iste repellendus,
-              laboriosam voluptate dolore quae doloremque et beatae ipsum
-              similique deleniti sapiente in vitae?
-            </p>
-            <p className="mb-4">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus
-              suscipit laudantium aspernatur odio id, at iste repellendus,
-              laboriosam voluptate dolore quae doloremque et beatae ipsum
-              similique deleniti sapiente in vitae?
-            </p>
-            <a
-              href="/registration"
-              className="px-8 py-2 border-2 border-black w-max rounded-full mb-6"
-            >
-              Apply now
-            </a>
+          <div className="flex flex-col">
             <h3 className="text-xl font-medium">Perks</h3>
             <ul className="list-disc ml-4 my-4 grid grid-cols-2">
               <li>Lorem ipsum</li>
@@ -144,7 +150,7 @@ export default function Page() {
                 },
               ].map((e) => {
                 return (
-                  <div className="flex flex-col items-center border-2 border-black p-2 py-3 rounded-xl hover:bg-black hover:text-white">
+                  <div className="flex flex-col items-center border-2 border-[rgb(var(--md-sys-color-on-surface))] p-2 py-3 rounded-xl hover:bg-black dark:hover:bg-white dark:hover:text-black hover:text-white">
                     <img className="w-14 h-14 object-contain" src={e.image} />
                     <p>{e.title}</p>
                   </div>
