@@ -11,6 +11,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FormDataProps } from "@/app/registration/page";
 import formFields from "@/lib/data/RegDetails";
 import toast, { Toaster } from "react-hot-toast";
+import { OutlinedTextField } from "material-you-react";
+import { FilledButton } from "material-you-react";
 
 const DomainOptions = [
   { value: "All", text: "All" },
@@ -79,7 +81,7 @@ export default function page() {
     setSelectedApplication(null);
   };
   return (
-    <div className="min-h-screen bg-gray-800 w-full flex flex-col justify-center items-center p-4">
+    <div className="min-h-screen w-full flex flex-col justify-center items-center p-4">
       <div className="overflow-x-hidden shadow-md">
         <div className="flex flex-col sm:flex-row flex-wrap space-y-4 items-center justify-between pb-4">
           <div className="flex gap-2 justify-center items-center">
@@ -87,13 +89,13 @@ export default function page() {
             <select
               onChange={(e) => setSelectedDomain(e.target.value)}
               id="dropdownRadioButton"
-              className="flex items-center justify-between text-white bg-gray-800 border border-gray-600 focus:outline-none hover:bg-gray-700 font-medium rounded-lg text-sm px-3 py-1.5 gap-2 appearance-none cursor-pointer"
+              className="flex items-center justify-between text-black border border-gray-600 focus:outline-none hover:bg-black/10 font-medium rounded-lg text-sm px-3 py-1.5 gap-2 appearance-none cursor-pointer"
             >
               {DomainOptions.map((item, index) => (
                 <option
                   key={index}
                   value={item.value}
-                  className="text-black px-4 py-2 hover:bg-gray-600 hover:text-white flex justify-between items-center cursor-pointer"
+                  className="text-black px-4 py-2 hover:bg-blue-200 flex justify-between items-center cursor-pointer"
                 >
                   {item.text}
                 </option>
@@ -101,21 +103,16 @@ export default function page() {
             </select>
           </div>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
-              <span className="material-symbols-outlined">search</span>
-            </div>
-            <input
-              type="text"
-              id="table-search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="block p-2 ps-10 text-sm text-white border border-gray-600 rounded-lg w-80 bg-gray-700 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Search by name"
+            <OutlinedTextField
+              // value={formData[item.name as keyof FormDataProps] || ""}
+              // onChange={(e) => handleChange(e)}
+              leadingIcon={'search'}
+              labelText={'search'}
             />
           </div>
         </div>
-        <table className="w-full overflow-hidden text-sm text-left text-gray-400">
-          <thead className="text-xs uppercase bg-gray-700 text-gray-400">
+        <table className="w-full overflow-hidden text-sm text-left text-black">
+          <thead className="text-xs uppercase bg-gray-200 text-black">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Name
@@ -135,12 +132,12 @@ export default function page() {
             {filteredApplications.map((item, index) => (
               <tr
                 key={index}
-                className="bg-gray-800 border-b border-gray-700 hover:bg-gray-600"
+                className="border-b border-gray-700 hover:bg-gray-600"
                 onClick={() => openModal(item)}
               >
                 <th
                   scope="row"
-                  className="px-6 py-4 font-medium text-white whitespace-nowrap"
+                  className="px-6 py-4 font-medium text-black whitespace-nowrap"
                 >
                   {item.name}
                 </th>
@@ -150,11 +147,11 @@ export default function page() {
                 <td className="px-6 py-4">{item.registrationDetails.domain}</td>
                 <td
                   className={`x-6 py-4 font-mono ${item.registrationDetails.applicationStatus === "processing"
-                      ? "text-yellow-500"
-                      : item.registrationDetails.applicationStatus ===
-                        "rejected"
-                        ? "text-red-500"
-                        : "text-green-500"
+                    ? "text-yellow-500"
+                    : item.registrationDetails.applicationStatus ===
+                      "rejected"
+                      ? "text-red-500"
+                      : "text-green-500"
                     }`}
                 >
                   {item.registrationDetails.applicationStatus}
@@ -213,14 +210,14 @@ function PopupModal({
           <p className="size-10 text-white font-medium">X</p>
         </button>
 
-        <div className="w-full max-h-[500px] overflow-y-scroll py-6 px-4 flex flex-col items-center bg-black/40 backdrop-blur-xl rounded-xl space-y-7 shadow-md shadow-gray-800 border border-gray-800">
+        <div className="w-full max-h-[500px] overflow-y-scroll py-6 px-4 flex flex-col items-center bg-black/40 backdrop-blur-xl rounded-xl space-y-7 border border-gray-800">
           <div className="h-px w-[80%] bg-gray-500 opacity-70" />
           {defaultDetails.map((item, index) => (
             <div
               key={index}
               className="w-full flex-justify-start items-start gap-5 "
             >
-              <p className="w-full text-base font-medium tracking-wider text-[#62a6fa]/90">
+              <p className="w-full text-base font-medium tracking-wider text-blue-800">
                 {item}
               </p>
               <p className="w-full text-sm font-normal tracking-wide text-white/60 text-wrap">
@@ -233,7 +230,7 @@ function PopupModal({
               key={index}
               className="w-full flex-justify-start items-start gap-5 "
             >
-              <p className="w-full text-base font-medium tracking-wider text-[#62a6fa]/90">
+              <p className="w-full text-base font-medium tracking-wider text-blue-800">
                 {item.label}
               </p>
               <p className="w-full text-sm font-normal tracking-wide text-white/60 text-wrap">
@@ -252,19 +249,26 @@ function PopupModal({
             onClick={() => updateApplicationStatus("approved")}
             type="button"
             className={`focus:outline-none text-white bg-green-600/80 hover:bg-green-700 focus:ring-4 focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "approved"
-                ? "opacity-50 cursor-not-allowed"
-                : ""
+              ? "opacity-50 cursor-not-allowed"
+              : ""
               }`}
           >
             Approve
           </button>
+          <FilledButton containerColor="rgba(22 163 74, 80%)" >
+            <p>Approve</p>
+          </FilledButton>
+
+          <FilledButton containerColor="rgba(220 38 38, 80%)" >
+            <p>Reject</p>
+          </FilledButton>
 
           <button
             onClick={() => updateApplicationStatus("rejected")}
             type="button"
             className={`focus:outline-none text-white bg-red-600/80 hover:bg-red-700 focus:ring-4 focus:ring-red-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "rejected"
-                ? "opacity-50 cursor-not-allowed"
-                : ""
+              ? "opacity-50 cursor-not-allowed"
+              : ""
               }`}
           >
             Reject
