@@ -2,7 +2,6 @@
 import { auth } from "@/lib/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { FcGoogle } from "react-icons/fc";
 
 export default function Home() {
   const router = useRouter();
@@ -28,12 +27,16 @@ export default function Home() {
           </button>
           <button
             onClick={async () => {
+              if (auth.currentUser) {
+                router.push("/volunteering");
+                return;
+              }
               const userCredential = await signInWithPopup(
                 auth,
                 new GoogleAuthProvider()
               );
               if (userCredential.user != null) {
-                router.push("/participation");
+                router.push("/volunteering");
               }
             }}
             className="font-medium px-7 text-[14px] py-[10px] border-black border-2 bg-[#F9AB00] rounded-full"
@@ -45,10 +48,12 @@ export default function Home() {
       {
         // Gallery
         <div className="my-4">
-          <img
-            src="https://github.com/ManasMalla.png"
-            className="aspect-[1.225] w-full object-cover rounded-3xl border-2 border-black"
-          />
+          <div className="aspect-[1.225] w-full object-cover overflow-clip rounded-3xl border-2 border-black">
+            <img
+              src="https://github.com/ManasMalla.png"
+              className="aspect-[1.225] w-full object-cover"
+            />
+          </div>
           <div className="grid grid-cols-2 my-4 gap-4 w-full">
             <img
               src="https://github.com/ManasMalla.png"
