@@ -207,7 +207,7 @@ function PopupModal({
     onClose();
   };
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center select-none z-20">
+    <div className="fixed inset-0 flex justify-center items-center select-none z-20">
       <div ref={modalRef} className="w-[85%] flex flex-col gap-3 text-white">
         <button onClick={onClose} className="place-self-end">
           <p className="size-10 text-white font-medium">X</p>
