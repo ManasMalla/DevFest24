@@ -28,7 +28,7 @@ export default function Home() {
           <button
             onClick={async () => {
               if (auth.currentUser) {
-                router.push("/participation");
+                router.push("/volunteering");
                 return;
               }
               const userCredential = await signInWithPopup(
@@ -36,7 +36,7 @@ export default function Home() {
                 new GoogleAuthProvider()
               );
               if (userCredential.user != null) {
-                router.push("/participation");
+                router.push("/volunteering");
               }
             }}
             className="font-medium px-7 text-[14px] py-[10px] border-black border-2 bg-[#F9AB00] rounded-full"

@@ -82,7 +82,7 @@ export default function page() {
       console.error("Error submitting registration:", error);
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
-      router.push("/participation");
+      router.push("/volunteering");
     }
   };
 
