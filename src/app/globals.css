@@ -4,16 +4,19 @@
 
 @import '~material-you-react/dist/esm/index.css';
 
+:root{
+  --md-sys-color-background: 255, 255, 255;
+}
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --md-sys-color-background: 0,0,0;
+  }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
   font-family: Google Sans, sans-serif;
+  color: rgb(var(--md-sys-color-on-background));
 }
 
 @layer utilities {
