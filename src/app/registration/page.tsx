@@ -20,9 +20,7 @@ export type FormDataProps = {
 
 export default function page() {
   const router = useRouter();
-  //   const { data: session } = useSession();
-  //TODO
-  const userId = auth?.currentUser?.uid ||'';
+  const userId = auth?.currentUser?.uid || "";
   const [formData, setFormData] = useState<FormDataProps>({
     phoneNumber: "",
     volunteerExperience: "",
@@ -52,7 +50,12 @@ export default function page() {
       await toast.promise(
         setDoc(
           userRef,
-          { registrationDetails: formData, registration: true, name: auth.currentUser?.displayName, email: auth.currentUser?.email },
+          {
+            registrationDetails: formData,
+            registration: true,
+            name: auth.currentUser?.displayName,
+            email: auth.currentUser?.email,
+          },
           { merge: true }
         ),
         {
