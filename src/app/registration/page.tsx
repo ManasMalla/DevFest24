@@ -14,25 +14,25 @@ import {
   RadioGroup,
 } from "material-you-react";
 import { useAuthContext } from "../context/AuthContext";
-import { ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export type FormDataProps = {
   name: string;
   gender:
-    | "He/Him"
-    | "She/Her"
-    | "They/Them"
-    | "Other"
-    | "Prefer not to say"
-    | "";
+  | "He/Him"
+  | "She/Her"
+  | "They/Them"
+  | "Other"
+  | "Prefer not to say"
+  | "";
   phoneNumber: string;
   role: string;
   organization: string;
   city: string;
-  profilePicture: File | null;
+  profilePicture: File | null | string;
   gdgDevLink: string;
   volunteerExperience: string;
-  resume: File | null;
+  resume: File | null | string;
   volunteeringInterest: string;
   pastEvents: "Yes" | "No" | "";
   applicationStatus: "processing" | "approved" | "rejected";
@@ -67,66 +67,63 @@ export default function page() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
     const profilePicture = ref(storage, `profilePictures/${userId}.png`);
     const resume = ref(storage, `resumes/${userId}.pdf`);
     if (formData.profilePicture == null || formData.resume == null) {
       toast.error("Please upload profile picture and resume");
       return;
     }
-    const snapshot = await uploadBytes(profilePicture, formData.profilePicture);
-    const snapshotResume = await uploadBytes(resume, formData.resume);
-    // snapshot.ref.getDownloadURL()
-    // const userRef = doc(collection(db, "users"), userId);
+    const snapshot = await uploadBytes(profilePicture, formData.profilePicture as File);
+    const snapshotResume = await uploadBytes(resume, formData.resume as File);
 
-    // try {
-    //   const userSnapshot = await getDoc(userRef);
+    const userRef = doc(collection(db, "users"), userId);
 
-    //   if (userSnapshot.exists()) {
-    //     const userData = userSnapshot.data();
+    const completeRegistration = async () => {
+      const profileURL = await getDownloadURL(profilePicture);
+      const resumeURL = await getDownloadURL(resume);
 
-    //     if (userData.registration) {
-    //       toast.error("Registration with this email already exists.");
-    //       return;
-    //     }
-    //   }
-    //   await toast.promise(
-    //     setDoc(
-    //       userRef,
-    //       {
-    //         registrationDetails: formData,
-    //         registration: true,
-    //         name: auth.currentUser?.displayName,
-    //         email: auth.currentUser?.email,
-    //       },
-    //       { merge: true }
-    //     ),
-    //     {
-    //       loading: "Submitting Registration...",
-    //       success: "Registration Successful",
-    //       error: "Please try again!",
-    //     }
-    //   );
+      setDoc(
+        userRef,
+        {
+          registrationDetails: {
+            ...formData,
+            profilePicture: profileURL,
+            resume: resumeURL
+          },
+          registration: true,
+          name: auth.currentUser?.displayName,
+          email: auth.currentUser?.email,
+        },
+      )
+    }
 
-    //   // send form to user's email
-    //   const email = ""; // TODO item;
-    //   console.log("Sending POST request to /api/volunteer/sendForm...");
-    //   const emailRes = await axios.post("/api/volunteer/sendForm", {
-    //     email,
-    //     data: formData,
-    //   });
-    //   console.log("Response:", emailRes);
-    //   if (emailRes.status === 200) {
-    //     toast("Confirmation email sent!", { icon: "📩" });
-    //   } else {
-    //     toast.error("Failed to send email.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error submitting registration:", error);
-    //   toast.error("An unexpected error occurred. Please try again.");
-    // } finally {
-    //   router.push("/volunteering");
-    // }
+    try {
+      await toast.promise(
+        completeRegistration(),
+        {
+          loading: "Submitting Registration...",
+          success: "Registration Successful",
+          error: "Please try again!",
+        }
+      );
+
+      // send form to user's email
+      const email = ""; // TODO item;
+      const emailRes = await axios.post("/api/volunteer/sendForm", {
+        email,
+        data: formData,
+      });
+      if (emailRes.status === 200) {
+        toast("Confirmation email sent!", { icon: "📩" });
+      } else {
+        toast.error("Failed to send email.");
+      }
+    } catch (error) {
+      console.error("Error submitting registration:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      router.push("/volunteering");
+    }
   };
 
   const handleChange = (name: string, value: string | string[] | File) => {
@@ -150,8 +147,8 @@ export default function page() {
             {formFields.map((item, index) => (
               <div key={index} className="mb-5">
                 {item.type === "text" ||
-                item.type === "tel" ||
-                item.type === "textarea" ? (
+                  item.type === "tel" ||
+                  item.type === "textarea" ? (
                   <OutlinedTextField
                     key={index}
                     value={
@@ -200,7 +197,7 @@ export default function page() {
                             value={
                               (
                                 formData[
-                                  item.name as keyof FormDataProps
+                                item.name as keyof FormDataProps
                                 ] as string[]
                               ).includes(op) || false
                             }
@@ -208,13 +205,13 @@ export default function page() {
                               if (
                                 (
                                   formData[
-                                    item.name as keyof FormDataProps
+                                  item.name as keyof FormDataProps
                                   ] as string[]
                                 ).includes(op)
                               ) {
                                 const newDomains = (
                                   formData[
-                                    item.name as keyof FormDataProps
+                                  item.name as keyof FormDataProps
                                   ] as string[]
                                 ).filter((domain) => domain !== op);
                                 handleChange(item.name, newDomains);
@@ -249,9 +246,11 @@ export default function page() {
                       formData.profilePicture && (
                         <img
                           src={
-                            formData.profilePicture
-                              ? URL.createObjectURL(formData.profilePicture)
-                              : ""
+                            formData.profilePicture && typeof (formData.profilePicture) !== 'string'
+                              ? URL.createObjectURL(formData.profilePicture as File)
+                              : typeof (formData.profilePicture) === 'string'
+                                ? formData.profilePicture
+                                : ''
                           }
                           alt="Profile Pic"
                           className="size-28 rounded-full m-4 object-cover"
