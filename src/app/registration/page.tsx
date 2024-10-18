@@ -1,7 +1,7 @@
 "use client";
-import { auth } from "@/lib/firebase";
+import { auth, storage } from "@/lib/firebase";
 import formFields from "@/lib/data/RegDetails";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
@@ -13,12 +13,20 @@ import {
   OutlinedTextField,
   RadioGroup,
 } from "material-you-react";
+import { useAuthContext } from "../context/AuthContext";
+import { ref, uploadBytes } from "firebase/storage";
 
 export type FormDataProps = {
   name: string;
-  gender: "He/Him" | "She/Her" | "They/Them" | "Other" | "Prefer not to say";
+  gender:
+    | "He/Him"
+    | "She/Her"
+    | "They/Them"
+    | "Other"
+    | "Prefer not to say"
+    | "";
   phoneNumber: string;
-  role: string[];
+  role: string;
   organization: string;
   city: string;
   profilePicture: File | null;
@@ -26,7 +34,7 @@ export type FormDataProps = {
   volunteerExperience: string;
   resume: File | null;
   volunteeringInterest: string;
-  pastEvents: "Yes" | "No";
+  pastEvents: "Yes" | "No" | "";
   applicationStatus: "processing" | "approved" | "rejected";
   domains: string[];
 };
@@ -34,11 +42,17 @@ export type FormDataProps = {
 export default function page() {
   const router = useRouter();
   const userId = auth?.currentUser?.uid || "";
+  const user = useAuthContext();
+  useEffect(() => {
+    if (user) {
+      handleChange("name", user.displayName || "");
+    }
+  }, [user]);
   const [formData, setFormData] = useState<FormDataProps>({
-    name: "",
-    gender: "Prefer not to say",
+    name: user?.displayName || "",
+    gender: "",
     phoneNumber: "",
-    role: [],
+    role: "",
     organization: "",
     city: "",
     profilePicture: null,
@@ -46,67 +60,76 @@ export default function page() {
     volunteerExperience: "",
     resume: null,
     volunteeringInterest: "",
-    pastEvents: "No",
+    pastEvents: "",
     applicationStatus: "processing",
     domains: [],
   });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const userRef = doc(collection(db, "users"), userId);
-
-    try {
-      const userSnapshot = await getDoc(userRef);
-
-      if (userSnapshot.exists()) {
-        const userData = userSnapshot.data();
-
-        if (userData.registration) {
-          toast.error("Registration with this email already exists.");
-          return;
-        }
-      }
-      await toast.promise(
-        setDoc(
-          userRef,
-          {
-            registrationDetails: formData,
-            registration: true,
-            name: auth.currentUser?.displayName,
-            email: auth.currentUser?.email,
-          },
-          { merge: true }
-        ),
-        {
-          loading: "Submitting Registration...",
-          success: "Registration Successful",
-          error: "Please try again!",
-        }
-      );
-
-      // send form to user's email
-      const email = ""; // TODO item;
-      console.log("Sending POST request to /api/volunteer/sendForm...");
-      const emailRes = await axios.post("/api/volunteer/sendForm", {
-        email,
-        data: formData,
-      });
-      console.log("Response:", emailRes);
-      if (emailRes.status === 200) {
-        toast("Confirmation email sent!", { icon: "📩" });
-      } else {
-        toast.error("Failed to send email.");
-      }
-    } catch (error) {
-      console.error("Error submitting registration:", error);
-      toast.error("An unexpected error occurred. Please try again.");
-    } finally {
-      router.push("/volunteering");
+    console.log("Form Data:", formData);
+    const profilePicture = ref(storage, `profilePictures/${userId}.png`);
+    const resume = ref(storage, `resumes/${userId}.pdf`);
+    if (formData.profilePicture == null || formData.resume == null) {
+      toast.error("Please upload profile picture and resume");
+      return;
     }
+    const snapshot = await uploadBytes(profilePicture, formData.profilePicture);
+    const snapshotResume = await uploadBytes(resume, formData.resume);
+    // snapshot.ref.getDownloadURL()
+    // const userRef = doc(collection(db, "users"), userId);
+
+    // try {
+    //   const userSnapshot = await getDoc(userRef);
+
+    //   if (userSnapshot.exists()) {
+    //     const userData = userSnapshot.data();
+
+    //     if (userData.registration) {
+    //       toast.error("Registration with this email already exists.");
+    //       return;
+    //     }
+    //   }
+    //   await toast.promise(
+    //     setDoc(
+    //       userRef,
+    //       {
+    //         registrationDetails: formData,
+    //         registration: true,
+    //         name: auth.currentUser?.displayName,
+    //         email: auth.currentUser?.email,
+    //       },
+    //       { merge: true }
+    //     ),
+    //     {
+    //       loading: "Submitting Registration...",
+    //       success: "Registration Successful",
+    //       error: "Please try again!",
+    //     }
+    //   );
+
+    //   // send form to user's email
+    //   const email = ""; // TODO item;
+    //   console.log("Sending POST request to /api/volunteer/sendForm...");
+    //   const emailRes = await axios.post("/api/volunteer/sendForm", {
+    //     email,
+    //     data: formData,
+    //   });
+    //   console.log("Response:", emailRes);
+    //   if (emailRes.status === 200) {
+    //     toast("Confirmation email sent!", { icon: "📩" });
+    //   } else {
+    //     toast.error("Failed to send email.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error submitting registration:", error);
+    //   toast.error("An unexpected error occurred. Please try again.");
+    // } finally {
+    //   router.push("/volunteering");
+    // }
   };
 
-  const handleChange = (name: string, value: string) => {
+  const handleChange = (name: string, value: string | string[] | File) => {
     setFormData({
       ...formData,
       [name as keyof FormDataProps]: value,
@@ -135,6 +158,7 @@ export default function page() {
                       (formData[item.name as keyof FormDataProps] as string) ||
                       ""
                     }
+                    type={item.type == "textarea" ? "textarea" : ""}
                     onValueChange={(e) => handleChange(item.name, e)}
                     labelText={item.label}
                   />
@@ -143,8 +167,14 @@ export default function page() {
                     <p>{item.label}</p>
                     <RadioGroup
                       children={item.options || []}
-                      value={""}
-                      onChange={() => {}}
+                      value={
+                        (formData[
+                          item.name as keyof FormDataProps
+                        ] as string) || ""
+                      }
+                      onChange={(value) => {
+                        handleChange(item.name, value);
+                      }}
                     />
                   </div>
                 ) : item.type === "checkbox" ? (
@@ -164,11 +194,39 @@ export default function page() {
                         >
                           <Checkbox
                             disabled={
-                              formData.domains.length >= 3 ||
-                              formData.domains.includes(op)
+                              formData.domains.length >= 3 &&
+                              !formData.domains.includes(op)
                             }
-                            value={false}
-                            onChange={() => {}}
+                            value={
+                              (
+                                formData[
+                                  item.name as keyof FormDataProps
+                                ] as string[]
+                              ).includes(op) || false
+                            }
+                            onChange={() => {
+                              if (
+                                (
+                                  formData[
+                                    item.name as keyof FormDataProps
+                                  ] as string[]
+                                ).includes(op)
+                              ) {
+                                const newDomains = (
+                                  formData[
+                                    item.name as keyof FormDataProps
+                                  ] as string[]
+                                ).filter((domain) => domain !== op);
+                                handleChange(item.name, newDomains);
+                              } else {
+                                handleChange(item.name, [
+                                  ...(formData[
+                                    item.name as keyof FormDataProps
+                                  ] as string[]),
+                                  op,
+                                ]);
+                              }
+                            }}
                           />
                           <p>{op}</p>
                         </div>
@@ -178,14 +236,27 @@ export default function page() {
                 ) : item.type === "file" ? (
                   <div>
                     <p className="mb-2">{item.label}</p>
-                    <input type="file" id={item.name} name={item.name} />
-                    {item.name === "profilePicture" && (
-                      <img
-                        src="https://github.com/ChandanKhamitkar.png"
-                        alt="Profile Pic"
-                        className="size-28 rounded-full m-4"
-                      />
-                    )}
+                    <input
+                      type="file"
+                      id={item.name}
+                      name={item.name}
+                      onChange={(e) => {
+                        if (!e.target.files) return;
+                        handleChange(item.name, e.target.files[0]);
+                      }}
+                    />
+                    {item.name === "profilePicture" &&
+                      formData.profilePicture && (
+                        <img
+                          src={
+                            formData.profilePicture
+                              ? URL.createObjectURL(formData.profilePicture)
+                              : ""
+                          }
+                          alt="Profile Pic"
+                          className="size-28 rounded-full m-4 object-cover"
+                        />
+                      )}
                   </div>
                 ) : (
                   <div className="">

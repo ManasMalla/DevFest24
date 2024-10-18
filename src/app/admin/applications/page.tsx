@@ -27,13 +27,9 @@ type ApplicationCollection = {
   registrationDetails: FormDataProps;
 } & DefaultDetails;
 
-<<<<<<< HEAD
 const ITEMS_PER_PAGE = 1;
 
 export default function page() {
-=======
-export default function ApplicationPage() {
->>>>>>> d23eec1 (production changes)
   const [showModal, setShowModal] = useState(false);
   const [selectedApplication, setSelectedApplication] =
     useState<ApplicationCollection | null>(null);
@@ -66,7 +62,7 @@ export default function ApplicationPage() {
     const filtered = allApplications.filter((application) => {
       const matchesDomain =
         selectedDomain === "All" ||
-        application.registrationDetails.domain.includes(selectedDomain);
+        application.registrationDetails.domains.includes(selectedDomain);
       const matchesSearch = application.name
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
@@ -75,7 +71,10 @@ export default function ApplicationPage() {
 
     setTotalPages(Math.ceil(filtered.length / ITEMS_PER_PAGE));
     setFilteredApplications(
-      filtered.slice((pageNumber - 1) * ITEMS_PER_PAGE, pageNumber * ITEMS_PER_PAGE)
+      filtered.slice(
+        (pageNumber - 1) * ITEMS_PER_PAGE,
+        pageNumber * ITEMS_PER_PAGE
+      )
     );
   }, [allApplications, searchTerm, selectedDomain, pageNumber]);
 
@@ -128,12 +127,13 @@ export default function ApplicationPage() {
           </div>
           <div className="relative">
             <OutlinedTextField
-              leadingIcon={'search'}
-              labelText={'search'}
-              value={searchTerm || ''}
+              leadingIcon={"search"}
+              labelText={"search"}
+              value={searchTerm || ""}
               onValueChange={(e) => {
-                setSearchTerm(e)
-              }} />
+                setSearchTerm(e);
+              }}
+            />
           </div>
         </div>
         <table className="w-full overflow-hidden text-sm text-left text-black">
@@ -169,17 +169,10 @@ export default function ApplicationPage() {
                 <td className="px-6 py-4 max-w-[clamp(150px,30vw,300px)] whitespace-nowrap overflow-hidden text-ellipsis">
                   {item.email}
                 </td>
-                <td className="px-6 py-4">{item.registrationDetails.domain}</td>
+                <td className="px-6 py-4">
+                  {item.registrationDetails.domains}
+                </td>
                 <td
-<<<<<<< HEAD
-                  className={`x-6 py-4 font-mono ${item.registrationDetails.applicationStatus === "processing"
-                    ? "text-yellow-500"
-                    : item.registrationDetails.applicationStatus ===
-                      "rejected"
-                      ? "text-red-500"
-                      : "text-green-500"
-                    }`}
-=======
                   className={`x-6 py-4 font-mono ${
                     item.registrationDetails.applicationStatus === "processing"
                       ? "text-yellow-500"
@@ -188,7 +181,6 @@ export default function ApplicationPage() {
                       ? "text-red-500"
                       : "text-green-500"
                   }`}
->>>>>>> d23eec1 (production changes)
                 >
                   {item.registrationDetails.applicationStatus}
                 </td>
@@ -282,11 +274,9 @@ function PopupModal({
                 {item.label}
               </p>
               <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
-                {
-                  application?.registrationDetails[
-                    item.name as keyof FormDataProps
-                  ]
-                }
+                {application?.registrationDetails[
+                  item.name as keyof FormDataProps
+                ]?.toString()}
               </p>
             </div>
           ))}
@@ -296,44 +286,28 @@ function PopupModal({
           {/* <button
             onClick={() => updateApplicationStatus("approved")}
             type="button"
-<<<<<<< HEAD
             className={`focus:outline-none text-white bg-green-600/80 hover:bg-green-700 focus:ring-4 focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "approved"
               ? "opacity-50 cursor-not-allowed"
               : ""
               }`}
-=======
-            className={`focus:outline-none text-white bg-green-600/80 hover:bg-green-700 focus:ring-4 focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${
-              application.registrationDetails.applicationStatus === "approved"
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
->>>>>>> d23eec1 (production changes)
           >
             Approve
           </button> */}
-          <FilledButton containerColor="rgb(22 163 74)" >
+          <FilledButton containerColor="rgb(22 163 74)">
             <p>Approve</p>
           </FilledButton>
 
-          <FilledButton containerColor="rgb(220 38 38)" >
+          <FilledButton containerColor="rgb(220 38 38)">
             <p>Reject</p>
           </FilledButton>
 
           {/* <button
             onClick={() => updateApplicationStatus("rejected")}
             type="button"
-<<<<<<< HEAD
             className={`focus:outline-none text-white bg-red-600/80 hover:bg-red-700 focus:ring-4 focus:ring-red-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "rejected"
               ? "opacity-50 cursor-not-allowed"
               : ""
               }`}
-=======
-            className={`focus:outline-none text-white bg-red-600/80 hover:bg-red-700 focus:ring-4 focus:ring-red-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${
-              application.registrationDetails.applicationStatus === "rejected"
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
->>>>>>> d23eec1 (production changes)
           >
             Reject
           </button> */}

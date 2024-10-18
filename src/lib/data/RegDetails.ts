@@ -24,7 +24,7 @@ const formFields = [
   {
     label: 'Role',
     name: 'role',
-    type: 'checkbox',
+    type: 'radio',
     options: [
       'Student',
       'Intern',

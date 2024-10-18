@@ -15,7 +15,7 @@
     "dotenv": "^16.4.5",
     "firebase": "^10.14.1",
     "mailgen": "^2.0.28",
-    "material-you-react": "^0.0.1-beta.3.1",
+    "material-you-react": "^0.0.1-beta.3.2",
     "next": "14.2.15",
     "next-auth": "^4.24.8",
     "nodemailer": "^6.9.15",
