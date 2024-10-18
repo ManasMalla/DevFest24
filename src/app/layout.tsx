@@ -1,7 +1,6 @@
 "use client";
-import type { Metadata } from "next";
 import "./globals.css";
-import { AuthContextProvider, useAuthContext } from "./context/AuthContext";
+import { AuthContextProvider } from "./context/AuthContext";
 import { BottomAppBar, Scaffold } from "material-you-react";
 import { auth } from "@/lib/firebase";
 import { useEffect, useState } from "react";
@@ -53,6 +52,7 @@ export default function RootLayout({
                   <img src="/logos/gdg_logo.svg" className="h-8" />
                 </a>
                 <img
+                  referrerPolicy="no-referrer"
                   src={userImage}
                   className="size-12 rounded-full object-cover border-[rgb(var(--md-sys-color-on-surface))] border-[2px]"
                 />

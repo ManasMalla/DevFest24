@@ -1,10 +1,6 @@
 "use client";
-import { auth } from "@/lib/firebase";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const router = useRouter();
   return (
     <div className="p-4 flex flex-col md:flex-row items-center">
       <div className="w-full flex flex-col items-center">
@@ -28,17 +24,18 @@ export default function Home() {
             </button>
             <button
               onClick={async () => {
-                if (auth.currentUser) {
-                  router.push("/volunteering");
-                  return;
-                }
-                const userCredential = await signInWithPopup(
-                  auth,
-                  new GoogleAuthProvider()
-                );
-                if (userCredential.user != null) {
-                  router.push("/volunteering");
-                }
+                alert("Check back soon.. !!!");
+                // if (auth.currentUser) {
+                //   router.push("/volunteering");
+                //   return;
+                // }
+                // const userCredential = await signInWithPopup(
+                //   auth,
+                //   new GoogleAuthProvider()
+                // );
+                // if (userCredential.user != null) {
+                //   router.push("/volunteering");
+                // }
               }}
               className="font-medium px-7 text-[14px] py-[10px] text-black border-[rgb(var(--md-sys-color-on-surface))] border-2 bg-[#F9AB00] rounded-full"
             >

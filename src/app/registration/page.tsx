@@ -1,13 +1,18 @@
 "use client";
 import { auth } from "@/lib/firebase";
 import formFields from "@/lib/data/RegDetails";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Checkbox, FilledButton, OutlinedTextField, RadioGroup } from "material-you-react";
+import {
+  Checkbox,
+  FilledButton,
+  OutlinedTextField,
+  RadioGroup,
+} from "material-you-react";
 
 export type FormDataProps = {
   name: string;
@@ -25,7 +30,6 @@ export type FormDataProps = {
   applicationStatus: "processing" | "approved" | "rejected";
   domains: string[];
 };
-
 
 export default function page() {
   const router = useRouter();
@@ -122,50 +126,72 @@ export default function page() {
           <form className="w-[80%]" onSubmit={handleSubmit}>
             {formFields.map((item, index) => (
               <div key={index} className="mb-5">
-                {item.type === 'text' || item.type === 'tel' || item.type === 'textarea' ?
+                {item.type === "text" ||
+                item.type === "tel" ||
+                item.type === "textarea" ? (
                   <OutlinedTextField
                     key={index}
                     value={
-                      (formData[item.name as keyof FormDataProps] as string) || ""
+                      (formData[item.name as keyof FormDataProps] as string) ||
+                      ""
                     }
                     onValueChange={(e) => handleChange(item.name, e)}
                     labelText={item.label}
                   />
-                  :
-                  item.type === 'radio' ?
-                    <div>
-                      <p>{item.label}</p>
-                      <RadioGroup children={item.options || []} value={''} onChange={() => { }} />
+                ) : item.type === "radio" ? (
+                  <div>
+                    <p>{item.label}</p>
+                    <RadioGroup
+                      children={item.options || []}
+                      value={""}
+                      onChange={() => {}}
+                    />
+                  </div>
+                ) : item.type === "checkbox" ? (
+                  <div className="">
+                    <p>{item.label}</p>
+                    <div
+                      className={
+                        item.name === "domains"
+                          ? "grid grid-cols-2 md:grid-cols-3"
+                          : ""
+                      }
+                    >
+                      {item.options?.map((op, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-start items-center gap-2"
+                        >
+                          <Checkbox
+                            disabled={
+                              formData.domains.length >= 3 ||
+                              formData.domains.includes(op)
+                            }
+                            value={false}
+                            onChange={() => {}}
+                          />
+                          <p>{op}</p>
+                        </div>
+                      ))}
                     </div>
-                    :
-                    item.type === 'checkbox' ?
-                      <div className="">
-                        <p>{item.label}</p>
-                        <div className={item.name === 'domains' ? "grid grid-cols-2 md:grid-cols-3" : ''}>
-                          {
-                            item.options?.map((op, index) => (
-                              <div key={index} className="flex justify-start items-center gap-2">
-                                <Checkbox disabled={formData.domains.length >= 3 || formData.domains.includes(op)} value={false} onChange={() => {}} />
-                                <p>{op}</p>
-                              </div>
-                            ))
-                          }
-                        </div>
-                      </div>
-                      :
-                      item.type === 'file' ?
-                        <div>
-                          <p className="mb-2">{item.label}</p>
-                          <input type="file" id={item.name} name={item.name} />
-                          {
-                            item.name === 'profilePicture' && <img src="https://github.com/ChandanKhamitkar.png" alt="Profile Pic" className="size-28 rounded-full m-4" />
-                          }
-                        </div>
-                        :
-                        <div className="">
-                          <p>{item.label}</p>
-                        </div>
-                }
+                  </div>
+                ) : item.type === "file" ? (
+                  <div>
+                    <p className="mb-2">{item.label}</p>
+                    <input type="file" id={item.name} name={item.name} />
+                    {item.name === "profilePicture" && (
+                      <img
+                        src="https://github.com/ChandanKhamitkar.png"
+                        alt="Profile Pic"
+                        className="size-28 rounded-full m-4"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <div className="">
+                    <p>{item.label}</p>
+                  </div>
+                )}
               </div>
             ))}
             <FilledButton>Submit</FilledButton>

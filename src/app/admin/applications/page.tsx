@@ -1,12 +1,7 @@
 "use client";
 import { db } from "@/lib/firebase";
 import { auth } from "@/lib/firebase";
-import {
-  collection,
-  doc,
-  onSnapshot,
-  updateDoc,
-} from "firebase/firestore";
+import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FormDataProps } from "@/app/registration/page";
 import formFields from "@/lib/data/RegDetails";
@@ -32,13 +27,22 @@ type ApplicationCollection = {
   registrationDetails: FormDataProps;
 } & DefaultDetails;
 
+<<<<<<< HEAD
 const ITEMS_PER_PAGE = 1;
 
 export default function page() {
+=======
+export default function ApplicationPage() {
+>>>>>>> d23eec1 (production changes)
   const [showModal, setShowModal] = useState(false);
-  const [selectedApplication, setSelectedApplication] = useState<ApplicationCollection | null>(null);
-  const [allApplications, setAllApplications] = useState<ApplicationCollection[]>([]);
-  const [filteredApplications, setFilteredApplications] = useState<ApplicationCollection[]>([]);
+  const [selectedApplication, setSelectedApplication] =
+    useState<ApplicationCollection | null>(null);
+  const [allApplications, setAllApplications] = useState<
+    ApplicationCollection[]
+  >([]);
+  const [filteredApplications, setFilteredApplications] = useState<
+    ApplicationCollection[]
+  >([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDomain, setSelectedDomain] = useState<string>("All");
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -56,7 +60,7 @@ export default function page() {
     });
 
     return () => unsubscribe();
-  }, []);
+  });
 
   const filterApplications = useCallback(() => {
     const filtered = allApplications.filter((application) => {
@@ -167,6 +171,7 @@ export default function page() {
                 </td>
                 <td className="px-6 py-4">{item.registrationDetails.domain}</td>
                 <td
+<<<<<<< HEAD
                   className={`x-6 py-4 font-mono ${item.registrationDetails.applicationStatus === "processing"
                     ? "text-yellow-500"
                     : item.registrationDetails.applicationStatus ===
@@ -174,6 +179,16 @@ export default function page() {
                       ? "text-red-500"
                       : "text-green-500"
                     }`}
+=======
+                  className={`x-6 py-4 font-mono ${
+                    item.registrationDetails.applicationStatus === "processing"
+                      ? "text-yellow-500"
+                      : item.registrationDetails.applicationStatus ===
+                        "rejected"
+                      ? "text-red-500"
+                      : "text-green-500"
+                  }`}
+>>>>>>> d23eec1 (production changes)
                 >
                   {item.registrationDetails.applicationStatus}
                 </td>
@@ -224,7 +239,7 @@ function PopupModal({
   }, []);
 
   const updateApplicationStatus = async (status: string) => {
-    const userRef = doc(collection(db, "users"), auth.currentUser?.uid || '');
+    const userRef = doc(collection(db, "users"), auth.currentUser?.uid || "");
     await toast.promise(
       updateDoc(userRef, { "registrationDetails.applicationStatus": status }),
       {
@@ -269,7 +284,7 @@ function PopupModal({
               <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
                 {
                   application?.registrationDetails[
-                  item.name as keyof FormDataProps
+                    item.name as keyof FormDataProps
                   ]
                 }
               </p>
@@ -281,10 +296,18 @@ function PopupModal({
           {/* <button
             onClick={() => updateApplicationStatus("approved")}
             type="button"
+<<<<<<< HEAD
             className={`focus:outline-none text-white bg-green-600/80 hover:bg-green-700 focus:ring-4 focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "approved"
               ? "opacity-50 cursor-not-allowed"
               : ""
               }`}
+=======
+            className={`focus:outline-none text-white bg-green-600/80 hover:bg-green-700 focus:ring-4 focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${
+              application.registrationDetails.applicationStatus === "approved"
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+>>>>>>> d23eec1 (production changes)
           >
             Approve
           </button> */}
@@ -299,10 +322,18 @@ function PopupModal({
           {/* <button
             onClick={() => updateApplicationStatus("rejected")}
             type="button"
+<<<<<<< HEAD
             className={`focus:outline-none text-white bg-red-600/80 hover:bg-red-700 focus:ring-4 focus:ring-red-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "rejected"
               ? "opacity-50 cursor-not-allowed"
               : ""
               }`}
+=======
+            className={`focus:outline-none text-white bg-red-600/80 hover:bg-red-700 focus:ring-4 focus:ring-red-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${
+              application.registrationDetails.applicationStatus === "rejected"
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+>>>>>>> d23eec1 (production changes)
           >
             Reject
           </button> */}

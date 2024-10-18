@@ -1,7 +1,4 @@
 "use client";
-import { auth } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, doc, getDoc } from "firebase/firestore";
@@ -9,7 +6,6 @@ import toast, { Toaster } from "react-hot-toast";
 import { useAuthContext } from "../context/AuthContext";
 
 export default function Page() {
-  const router = useRouter();
   const user = useAuthContext();
   const [registration, setRegistration] = useState<boolean | undefined>(false);
   const [applicationStatus, setApplicationStatus] = useState<string>("");
@@ -150,7 +146,10 @@ export default function Page() {
                 },
               ].map((e) => {
                 return (
-                  <div className="flex flex-col items-center border-2 border-[rgb(var(--md-sys-color-on-surface))] p-2 py-3 rounded-xl hover:bg-black dark:hover:bg-white dark:hover:text-black hover:text-white">
+                  <div
+                    key={e.title}
+                    className="flex flex-col items-center border-2 border-[rgb(var(--md-sys-color-on-surface))] p-2 py-3 rounded-xl hover:bg-black dark:hover:bg-white dark:hover:text-black hover:text-white"
+                  >
                     <img className="w-14 h-14 object-contain" src={e.image} />
                     <p>{e.title}</p>
                   </div>
