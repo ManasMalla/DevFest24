@@ -49,17 +49,17 @@ export default function Home() {
         <div className="my-4">
           <div className="aspect-[1.225] w-full object-cover overflow-clip rounded-3xl border-2 border-[rgb(var(--md-sys-color-on-surface))]">
             <img
-              src="https://github.com/ManasMalla.png"
+              src="/images/devfest19.png"
               className="aspect-[1.225] w-full object-cover"
             />
           </div>
           <div className="grid grid-cols-2 my-4 gap-4 w-full">
             <img
-              src="https://github.com/ManasMalla.png"
+              src="/images/volunteers.jpg"
               className="aspect-[1.67] grow object-cover rounded-xl border-2 border-[rgb(var(--md-sys-color-on-surface))] saturate-0"
             />
             <img
-              src="https://github.com/ManasMalla.png"
+              src="/images/devfest19.png"
               className="aspect-[1.67] grow object-cover rounded-xl border-2 border-[rgb(var(--md-sys-color-on-surface))] saturate-0"
             />
           </div>
