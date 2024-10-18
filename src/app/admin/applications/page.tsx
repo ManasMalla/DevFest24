@@ -26,7 +26,7 @@ type ApplicationCollection = {
   registrationDetails: FormDataProps;
 } & DefaultDetails;
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 10;
 
 export default function Page() {
   const [showModal, setShowModal] = useState(false);
