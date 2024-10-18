@@ -104,7 +104,7 @@ export default function Page() {
               </p> */}
               <a
                 href="/registration"
-                className="px-8 py-2 border-2 border-[rgb(var(--md-sys-color-on-surface))] w-max rounded-full mb-6"
+                className="px-8 py-2 border-2 border-[rgb(var(--md-sys-color-on-surface))] w-max rounded-full mb-6 mt-6"
               >
                 Apply now
               </a>
