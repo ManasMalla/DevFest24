@@ -90,7 +90,7 @@ export default function Page() {
               <h3 className="text-4xl font-bold md:-translate-x-6">
                 Our Volunteers.
               </h3>
-              <p className="py-4 md:mb-4 lg:mb-0">
+{/*               <p className="py-4 md:mb-4 lg:mb-0">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus
                 suscipit laudantium aspernatur odio id, at iste repellendus,
                 laboriosam voluptate dolore quae doloremque et beatae ipsum
@@ -101,7 +101,7 @@ export default function Page() {
                 suscipit laudantium aspernatur odio id, at iste repellendus,
                 laboriosam voluptate dolore quae doloremque et beatae ipsum
                 similique deleniti sapiente in vitae?
-              </p>
+              </p> */}
               <a
                 href="/registration"
                 className="px-8 py-2 border-2 border-[rgb(var(--md-sys-color-on-surface))] w-max rounded-full mb-6"
@@ -110,7 +110,7 @@ export default function Page() {
               </a>
             </div>
           </div>
-          <div className="flex flex-col">
+{/*           <div className="flex flex-col">
             <h3 className="text-xl font-medium">Perks</h3>
             <ul className="list-disc ml-4 my-4 grid grid-cols-2">
               <li>Lorem ipsum</li>
@@ -155,7 +155,7 @@ export default function Page() {
                   </div>
                 );
               })}
-            </div>
+            </div> */}
           </div>
         </div>
         <Toaster />
