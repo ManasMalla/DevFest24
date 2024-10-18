@@ -67,8 +67,10 @@ export default function page() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const profilePicture = ref(storage, `profilePictures/${userId}.png`);
     const resume = ref(storage, `resumes/${userId}.pdf`);
+
     if (formData.profilePicture == null || formData.resume == null) {
       toast.error("Please upload profile picture and resume");
       return;
@@ -81,6 +83,8 @@ export default function page() {
     const completeRegistration = async () => {
       const profileURL = await getDownloadURL(profilePicture);
       const resumeURL = await getDownloadURL(resume);
+      console.log("profile URL =",profileURL);
+      console.log("Resume URL =",resumeURL);
 
       setDoc(
         userRef,
@@ -91,10 +95,18 @@ export default function page() {
             resume: resumeURL
           },
           registration: true,
-          name: auth.currentUser?.displayName,
           email: auth.currentUser?.email,
         },
-      )
+      );
+
+      await axios.get(`https://us-central1-devfest-2024-64eb1.cloudfunctions.net/volunteerApplicationSubmittedEmail?name=${formData.name}&email=${user?.email}&data=${JSON.stringify(
+        {
+          ...formData,
+          profilePicture: profileURL.split('&token')[0],
+          profilePictureToken : profileURL.split('&token')[1],
+          resume: resumeURL.split('&token')[0],
+          resumeToken : resumeURL.split('&token')[1],
+        })}`)
     }
 
     try {
@@ -106,18 +118,6 @@ export default function page() {
           error: "Please try again!",
         }
       );
-
-      // send form to user's email
-      const email = ""; // TODO item;
-      const emailRes = await axios.post("/api/volunteer/sendForm", {
-        email,
-        data: formData,
-      });
-      if (emailRes.status === 200) {
-        toast("Confirmation email sent!", { icon: "📩" });
-      } else {
-        toast.error("Failed to send email.");
-      }
     } catch (error) {
       console.error("Error submitting registration:", error);
       toast.error("An unexpected error occurred. Please try again.");
@@ -138,7 +138,6 @@ export default function page() {
       <div className="w-full p-4">
         <h5 className="mb-5 text-center text-2xl font-semibold">
           Fill in your details
-          {/* <span className="font-mono text-xl">{domains}</span> */}
         </h5>
 
         <div className="flex flex-col justify-center items-center">

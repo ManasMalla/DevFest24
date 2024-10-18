@@ -63,9 +63,9 @@ export default function page() {
       const matchesDomain =
         selectedDomain === "All" ||
         application.registrationDetails.domains.includes(selectedDomain);
-      const matchesSearch = application.name
+      const matchesSearch = application.registrationDetails.name
         .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      .includes(searchTerm.toLowerCase());
       return matchesDomain && matchesSearch;
     });
 
@@ -164,7 +164,7 @@ export default function page() {
                   scope="row"
                   className="px-6 py-4 font-medium text-black whitespace-nowrap"
                 >
-                  {item.name}
+                  {item.registrationDetails.name}
                 </th>
                 <td className="px-6 py-4 max-w-[clamp(150px,30vw,300px)] whitespace-nowrap overflow-hidden text-ellipsis">
                   {item.email}
@@ -173,14 +173,13 @@ export default function page() {
                   {item.registrationDetails.domains}
                 </td>
                 <td
-                  className={`x-6 py-4 font-mono ${
-                    item.registrationDetails.applicationStatus === "processing"
-                      ? "text-yellow-500"
-                      : item.registrationDetails.applicationStatus ===
-                        "rejected"
+                  className={`x-6 py-4 font-mono ${item.registrationDetails.applicationStatus === "processing"
+                    ? "text-yellow-500"
+                    : item.registrationDetails.applicationStatus ===
+                      "rejected"
                       ? "text-red-500"
                       : "text-green-500"
-                  }`}
+                    }`}
                 >
                   {item.registrationDetails.applicationStatus}
                 </td>
@@ -252,19 +251,16 @@ function PopupModal({
 
         <div className="w-full max-h-[500px] overflow-y-scroll py-6 px-4 flex flex-col items-center bg-white rounded-xl space-y-7 border border-gray-400">
           <div className="h-px w-[80%] bg-gray-500 opacity-70" />
-          {defaultDetails.map((item, index) => (
-            <div
-              key={index}
-              className="w-full flex-justify-start items-start gap-5 "
-            >
-              <p className="w-full text-base font-medium tracking-wider text-black">
-                {item[0].toLocaleUpperCase() + item.slice(1)}
-              </p>
-              <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
-                {application[item as keyof DefaultDetails]}
-              </p>
-            </div>
-          ))}
+          <div
+            className="w-full flex-justify-start items-start gap-5 "
+          >
+            <p className="w-full text-base font-medium tracking-wider text-black">
+              Email
+            </p>  
+            <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
+                  {application.email}
+                </p>
+          </div>
           {formFields.map((item, index) => (
             <div
               key={index}
@@ -273,11 +269,24 @@ function PopupModal({
               <p className="w-full text-base font-medium tracking-wider text-black">
                 {item.label}
               </p>
-              <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
-                {application?.registrationDetails[
-                  item.name as keyof FormDataProps
-                ]?.toString()}
-              </p>
+              {
+                item.name === 'resume'
+                  ? <a href={`${application?.registrationDetails[item.name as keyof FormDataProps]?.toString()}`}
+                    className="text-blue-500 underline"
+                  >Click Here</a>
+                  : item.name === 'profilePicture'
+                    ? <img
+                      src={`${application?.registrationDetails[item.name as keyof FormDataProps]?.toString()}`}
+                      alt="Profile Pic"
+                      className="size-28 rounded-full m-4 object-cover"
+                    />
+                    : <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
+                      {application?.registrationDetails[
+                        item.name as keyof FormDataProps
+                      ]?.toString()}
+                    </p>
+
+              }
             </div>
           ))}
         </div>
@@ -293,11 +302,11 @@ function PopupModal({
           >
             Approve
           </button> */}
-          <FilledButton containerColor="rgb(22 163 74)">
+          <FilledButton disabled containerColor="rgb(22 163 74)">
             <p>Approve</p>
           </FilledButton>
 
-          <FilledButton containerColor="rgb(220 38 38)">
+          <FilledButton disabled containerColor="rgb(220 38 38)">
             <p>Reject</p>
           </FilledButton>
 
@@ -317,4 +326,4 @@ function PopupModal({
   );
 }
 
-const defaultDetails = ["name", "email"];
+const defaultDetails = ["email"];
