@@ -12,7 +12,7 @@ export default function Home() {
               className="w-full mb-4"
             />
             <p>
-              GITAM University | <span className="font-bold">December 6-7</span>
+              TBA | <span className="font-bold">TBA</span>
             </p>
           </div>
         }

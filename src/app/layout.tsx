@@ -45,7 +45,7 @@ export default function RootLayout({
       </head>
       <body className={`antialiased flex flex-col md:px-12 lg:px-36`}>
         <AuthContextProvider>
-          <Scaffold bottomAppBar={<BottomAppBar items={[]} />}>
+          <Scaffold>
             <>
               <nav className="p-6 flex justify-between items-center">
                 <a href="/">
@@ -58,7 +58,7 @@ export default function RootLayout({
                 />
               </nav>
               {children}
-              <div className="h-24" />
+              {/* <div className="h-24" /> */}
             </>
           </Scaffold>
         </AuthContextProvider>
