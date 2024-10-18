@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-export default function page() {
+export default function Page() {
   const router = useRouter();
   return (
     <div className="h-screen w-full flex flex-col justify-center items-center p-4">

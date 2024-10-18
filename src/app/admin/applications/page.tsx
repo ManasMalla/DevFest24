@@ -29,7 +29,7 @@ type ApplicationCollection = {
 
 const ITEMS_PER_PAGE = 1;
 
-export default function page() {
+export default function Page() {
   const [showModal, setShowModal] = useState(false);
   const [selectedApplication, setSelectedApplication] =
     useState<ApplicationCollection | null>(null);

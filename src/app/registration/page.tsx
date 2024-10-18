@@ -3,7 +3,7 @@ import { auth, storage } from "@/lib/firebase";
 import formFields from "@/lib/data/RegDetails";
 import { FormEvent, useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, setDoc } from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -39,7 +39,7 @@ export type FormDataProps = {
   domains: string[];
 };
 
-export default function page() {
+export default function Page() {
   const router = useRouter();
   const userId = auth?.currentUser?.uid || "";
   const user = useAuthContext();
