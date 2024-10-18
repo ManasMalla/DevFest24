@@ -7,29 +7,44 @@ import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { FilledButton, OutlinedTextField } from "material-you-react";
+import { Checkbox, FilledButton, OutlinedTextField, RadioGroup } from "material-you-react";
 
 export type FormDataProps = {
+  name: string;
+  gender: "He/Him" | "She/Her" | "They/Them" | "Other" | "Prefer not to say";
   phoneNumber: string;
+  role: string[];
+  organization: string;
+  city: string;
+  profilePicture: File | null;
+  gdgDevLink: string;
   volunteerExperience: string;
-  skillsOrTalents: string;
+  resume: File | null;
   volunteeringInterest: string;
-  expectedOutcome: string;
+  pastEvents: "Yes" | "No";
   applicationStatus: "processing" | "approved" | "rejected";
-  domain: string[];
+  domains: string[];
 };
+
 
 export default function page() {
   const router = useRouter();
   const userId = auth?.currentUser?.uid || "";
   const [formData, setFormData] = useState<FormDataProps>({
+    name: "",
+    gender: "Prefer not to say",
     phoneNumber: "",
+    role: [],
+    organization: "",
+    city: "",
+    profilePicture: null,
+    gdgDevLink: "",
     volunteerExperience: "",
-    skillsOrTalents: "",
+    resume: null,
     volunteeringInterest: "",
-    expectedOutcome: "",
+    pastEvents: "No",
     applicationStatus: "processing",
-    domain: [],
+    domains: [],
   });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -99,7 +114,7 @@ export default function page() {
       <div className="w-full p-4">
         <h5 className="mb-5 text-center text-2xl font-semibold">
           Fill in your details
-          {/* <span className="font-mono text-xl">{domain}</span> */}
+          {/* <span className="font-mono text-xl">{domains}</span> */}
         </h5>
 
         <div className="flex flex-col justify-center items-center">
@@ -107,16 +122,52 @@ export default function page() {
           <form className="w-[80%]" onSubmit={handleSubmit}>
             {formFields.map((item, index) => (
               <div key={index} className="mb-5">
-                <OutlinedTextField
-                  value={
-                    (formData[item.name as keyof FormDataProps] as string) || ""
-                  }
-                  onValueChange={(e) => handleChange(item.name, e)}
-                  labelText={item.label}
-                />
+                {item.type === 'text' || item.type === 'tel' || item.type === 'textarea' ?
+                  <OutlinedTextField
+                    key={index}
+                    value={
+                      (formData[item.name as keyof FormDataProps] as string) || ""
+                    }
+                    onValueChange={(e) => handleChange(item.name, e)}
+                    labelText={item.label}
+                  />
+                  :
+                  item.type === 'radio' ?
+                    <div>
+                      <p>{item.label}</p>
+                      <RadioGroup children={item.options || []} value={''} onChange={() => { }} />
+                    </div>
+                    :
+                    item.type === 'checkbox' ?
+                      <div className="">
+                        <p>{item.label}</p>
+                        <div className={item.name === 'domains' ? "grid grid-cols-2 md:grid-cols-3" : ''}>
+                          {
+                            item.options?.map((op, index) => (
+                              <div key={index} className="flex justify-start items-center gap-2">
+                                <Checkbox disabled={formData.domains.length >= 3 || formData.domains.includes(op)} value={false} onChange={() => {}} />
+                                <p>{op}</p>
+                              </div>
+                            ))
+                          }
+                        </div>
+                      </div>
+                      :
+                      item.type === 'file' ?
+                        <div>
+                          <p className="mb-2">{item.label}</p>
+                          <input type="file" id={item.name} name={item.name} />
+                          {
+                            item.name === 'profilePicture' && <img src="https://github.com/ChandanKhamitkar.png" alt="Profile Pic" className="size-28 rounded-full m-4" />
+                          }
+                        </div>
+                        :
+                        <div className="">
+                          <p>{item.label}</p>
+                        </div>
+                }
               </div>
             ))}
-
             <FilledButton>Submit</FilledButton>
           </form>
         </div>

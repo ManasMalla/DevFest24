@@ -32,6 +32,8 @@ type ApplicationCollection = {
   registrationDetails: FormDataProps;
 } & DefaultDetails;
 
+const ITEMS_PER_PAGE = 1;
+
 export default function page() {
   const [showModal, setShowModal] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<ApplicationCollection | null>(null);
@@ -39,6 +41,8 @@ export default function page() {
   const [filteredApplications, setFilteredApplications] = useState<ApplicationCollection[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDomain, setSelectedDomain] = useState<string>("All");
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
     const usersRef = collection(db, "users");
@@ -47,7 +51,8 @@ export default function page() {
         (doc) => doc.data() as ApplicationCollection
       );
       setAllApplications(retrievedData);
-      setFilteredApplications(retrievedData);
+      setFilteredApplications(retrievedData.slice(0, ITEMS_PER_PAGE));
+      setTotalPages(Math.ceil(retrievedData.length / ITEMS_PER_PAGE));
     });
 
     return () => unsubscribe();
@@ -64,12 +69,27 @@ export default function page() {
       return matchesDomain && matchesSearch;
     });
 
-    setFilteredApplications(filtered);
-  }, [allApplications, searchTerm, selectedDomain]);
+    setTotalPages(Math.ceil(filtered.length / ITEMS_PER_PAGE));
+    setFilteredApplications(
+      filtered.slice((pageNumber - 1) * ITEMS_PER_PAGE, pageNumber * ITEMS_PER_PAGE)
+    );
+  }, [allApplications, searchTerm, selectedDomain, pageNumber]);
 
   useEffect(() => {
     filterApplications();
-  }, [searchTerm, selectedDomain, filterApplications]);
+  }, [searchTerm, selectedDomain, pageNumber, filterApplications]);
+
+  const handlePreviousPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber((prev) => prev - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (pageNumber < totalPages) {
+      setPageNumber((prev) => prev + 1);
+    }
+  };
 
   const openModal = (application: ApplicationCollection) => {
     setSelectedApplication(application);
@@ -104,11 +124,12 @@ export default function page() {
           </div>
           <div className="relative">
             <OutlinedTextField
-              // value={formData[item.name as keyof FormDataProps] || ""}
-              // onChange={(e) => handleChange(e)}
               leadingIcon={'search'}
               labelText={'search'}
-            />
+              value={searchTerm || ''}
+              onValueChange={(e) => {
+                setSearchTerm(e)
+              }} />
           </div>
         </div>
         <table className="w-full overflow-hidden text-sm text-left text-black">
@@ -160,6 +181,18 @@ export default function page() {
             ))}
           </tbody>
         </table>
+
+        <div className="flex justify-between items-center mt-4">
+          <button onClick={handlePreviousPage} disabled={pageNumber === 1}>
+            Previous
+          </button>
+          <p>
+            Page {pageNumber} of {totalPages}
+          </p>
+          <button onClick={handleNextPage} disabled={pageNumber === totalPages}>
+            Next
+          </button>
+        </div>
       </div>
       {showModal && selectedApplication && (
         <PopupModal application={selectedApplication} onClose={closeModal} />
@@ -207,20 +240,20 @@ function PopupModal({
     <div className="fixed inset-0 flex justify-center items-center select-none z-20">
       <div ref={modalRef} className="w-[85%] flex flex-col gap-3 text-white">
         <button onClick={onClose} className="place-self-end">
-          <p className="size-10 text-white font-medium">X</p>
+          <p className="size-10 text-black font-medium">X</p>
         </button>
 
-        <div className="w-full max-h-[500px] overflow-y-scroll py-6 px-4 flex flex-col items-center bg-black/40 backdrop-blur-xl rounded-xl space-y-7 border border-gray-800">
+        <div className="w-full max-h-[500px] overflow-y-scroll py-6 px-4 flex flex-col items-center bg-white rounded-xl space-y-7 border border-gray-400">
           <div className="h-px w-[80%] bg-gray-500 opacity-70" />
           {defaultDetails.map((item, index) => (
             <div
               key={index}
               className="w-full flex-justify-start items-start gap-5 "
             >
-              <p className="w-full text-base font-medium tracking-wider text-blue-800">
-                {item}
+              <p className="w-full text-base font-medium tracking-wider text-black">
+                {item[0].toLocaleUpperCase() + item.slice(1)}
               </p>
-              <p className="w-full text-sm font-normal tracking-wide text-white/60 text-wrap">
+              <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
                 {application[item as keyof DefaultDetails]}
               </p>
             </div>
@@ -230,10 +263,10 @@ function PopupModal({
               key={index}
               className="w-full flex-justify-start items-start gap-5 "
             >
-              <p className="w-full text-base font-medium tracking-wider text-blue-800">
+              <p className="w-full text-base font-medium tracking-wider text-black">
                 {item.label}
               </p>
-              <p className="w-full text-sm font-normal tracking-wide text-white/60 text-wrap">
+              <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
                 {
                   application?.registrationDetails[
                   item.name as keyof FormDataProps
@@ -244,8 +277,8 @@ function PopupModal({
           ))}
         </div>
 
-        <div className="flex justify-center items-center gap-6">
-          <button
+        <div className="flex justify-between items-center gap-6">
+          {/* <button
             onClick={() => updateApplicationStatus("approved")}
             type="button"
             className={`focus:outline-none text-white bg-green-600/80 hover:bg-green-700 focus:ring-4 focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "approved"
@@ -254,16 +287,16 @@ function PopupModal({
               }`}
           >
             Approve
-          </button>
-          <FilledButton containerColor="rgba(22 163 74, 80%)" >
+          </button> */}
+          <FilledButton containerColor="rgb(22 163 74)" >
             <p>Approve</p>
           </FilledButton>
 
-          <FilledButton containerColor="rgba(220 38 38, 80%)" >
+          <FilledButton containerColor="rgb(220 38 38)" >
             <p>Reject</p>
           </FilledButton>
 
-          <button
+          {/* <button
             onClick={() => updateApplicationStatus("rejected")}
             type="button"
             className={`focus:outline-none text-white bg-red-600/80 hover:bg-red-700 focus:ring-4 focus:ring-red-900 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${application.registrationDetails.applicationStatus === "rejected"
@@ -272,7 +305,7 @@ function PopupModal({
               }`}
           >
             Reject
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

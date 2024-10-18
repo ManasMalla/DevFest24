@@ -48,9 +48,6 @@ export default function page() {
                         labelText={"Password"}
                     />
                 </div>
-                {/* <button onClick={() => {
-                    console.log('someone killed me!');
-                }}>Login</button> */}
                 <FilledButton>Login</FilledButton>
             </form>
         </div>

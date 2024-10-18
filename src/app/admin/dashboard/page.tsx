@@ -5,11 +5,9 @@ export default function page() {
     const router = useRouter();
     return (
         <div className="h-screen w-full flex flex-col justify-center items-center p-4">
-            {/* <p className="text-2xl font-mono text-center mb-4 font-semibold">Admin Login 🔐</p> */}
-
             {
                 activitiesJson.map((item, index) => (
-                    <div onClick={() => router.push(item.route)}  className="mb-4 p-6 border border-black rounded-lg shadow">
+                    <div key={index} onClick={() => router.push(item.route)}  className="mb-4 p-6 border border-black rounded-lg shadow">
                         <span className="material-symbols-outlined size-10">
                             {item.icon}
                         </span>
