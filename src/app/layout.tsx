@@ -42,6 +42,10 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         />
+        <link
+          rel="stylesheet"
+          href="//fonts.googleapis.com/css?family=Google+Sans:400,500,600,700|Google+Sans+Text:400,400italic,500,500italic,600,600italic,700,700italic|Roboto+Mono:400,500,700&amp;display=swap"
+        />
       </head>
       <body className={`antialiased flex flex-col md:px-12 lg:px-36`}>
         <AuthContextProvider>
