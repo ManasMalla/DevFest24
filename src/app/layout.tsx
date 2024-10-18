@@ -1,7 +1,7 @@
 "use client";
 import "./globals.css";
 import { AuthContextProvider } from "./context/AuthContext";
-import { BottomAppBar, Scaffold } from "material-you-react";
+import { Scaffold } from "material-you-react";
 import { auth } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";

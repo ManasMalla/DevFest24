@@ -75,16 +75,16 @@ export default function Page() {
       toast.error("Please upload profile picture and resume");
       return;
     }
-    const snapshot = await uploadBytes(profilePicture, formData.profilePicture as File);
-    const snapshotResume = await uploadBytes(resume, formData.resume as File);
+    await uploadBytes(profilePicture, formData.profilePicture as File);
+    await uploadBytes(resume, formData.resume as File);
 
     const userRef = doc(collection(db, "users"), userId);
 
     const completeRegistration = async () => {
       const profileURL = await getDownloadURL(profilePicture);
       const resumeURL = await getDownloadURL(resume);
-      console.log("profile URL =",profileURL);
-      console.log("Resume URL =",resumeURL);
+      console.log("profile URL =", profileURL);
+      console.log("Resume URL =", resumeURL);
 
       setDoc(
         userRef,
@@ -103,9 +103,9 @@ export default function Page() {
         {
           ...formData,
           profilePicture: profileURL.split('&token')[0],
-          profilePictureToken : profileURL.split('&token')[1],
+          profilePictureToken: profileURL.split('&token')[1],
           resume: resumeURL.split('&token')[0],
-          resumeToken : resumeURL.split('&token')[1],
+          resumeToken: resumeURL.split('&token')[1],
         })}`)
     }
 
@@ -162,7 +162,6 @@ export default function Page() {
                   <div>
                     <p>{item.label}</p>
                     <RadioGroup
-                      children={item.options || []}
                       value={
                         (formData[
                           item.name as keyof FormDataProps
@@ -171,7 +170,9 @@ export default function Page() {
                       onChange={(value) => {
                         handleChange(item.name, value);
                       }}
-                    />
+                    >
+                      {item.options || []}
+                    </RadioGroup>
                   </div>
                 ) : item.type === "checkbox" ? (
                   <div className="">

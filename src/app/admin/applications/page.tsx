@@ -1,11 +1,10 @@
 "use client";
 import { db } from "@/lib/firebase";
-import { auth } from "@/lib/firebase";
-import { collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FormDataProps } from "@/app/registration/page";
 import formFields from "@/lib/data/RegDetails";
-import toast, { Toaster } from "react-hot-toast";
+// import { Toaster } from "react-hot-toast";
 import { OutlinedTextField } from "material-you-react";
 import { FilledButton } from "material-you-react";
 
@@ -203,7 +202,7 @@ export default function Page() {
       {showModal && selectedApplication && (
         <PopupModal application={selectedApplication} onClose={closeModal} />
       )}
-      <Toaster />
+      {/* <Toaster /> */}
     </div>
   );
 }
@@ -229,19 +228,19 @@ function PopupModal({
     };
   }, []);
 
-  const updateApplicationStatus = async (status: string) => {
-    const userRef = doc(collection(db, "users"), auth.currentUser?.uid || "");
-    await toast.promise(
-      updateDoc(userRef, { "registrationDetails.applicationStatus": status }),
-      {
-        loading: "Updating please wait!",
-        success: "Status updated Successfully",
-        error: "Please try again!",
-      }
-    );
+  // const updateApplicationStatus = async (status: string) => {
+  //   const userRef = doc(collection(db, "users"), auth.currentUser?.uid || "");
+  //   await toast.promise(
+  //     updateDoc(userRef, { "registrationDetails.applicationStatus": status }),
+  //     {
+  //       loading: "Updating please wait!",
+  //       success: "Status updated Successfully",
+  //       error: "Please try again!",
+  //     }
+  //   );
 
-    onClose();
-  };
+  //   onClose();
+  // };
   return (
     <div className="fixed inset-0 flex justify-center items-center select-none z-20">
       <div ref={modalRef} className="w-[85%] flex flex-col gap-3 text-white">
@@ -325,5 +324,3 @@ function PopupModal({
     </div>
   );
 }
-
-const defaultDetails = ["email"];
