@@ -1,15 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, doc, getDoc } from "firebase/firestore";
 import toast, { Toaster } from "react-hot-toast";
 import { useAuthContext } from "../context/AuthContext";
+import { Roles } from "@/lib/data/RegDetails";
 
 export default function Page() {
   const user = useAuthContext();
   const [registration, setRegistration] = useState<boolean | undefined>(false);
   const [applicationStatus, setApplicationStatus] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedRole, setSelectedRole] = useState<string[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -18,6 +21,15 @@ export default function Page() {
       setLoading(false);
     }
   }, [user]);
+
+  const openModal = (jobDescription: string[]) => {
+    setSelectedRole(jobDescription)
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
 
   const fetchUserData = async (userId: string) => {
     const userRef = doc(collection(db, "users"), userId);
@@ -55,13 +67,12 @@ export default function Page() {
           <li className="mb-2">
             Your application Status:
             <span
-              className={`font-semibold text-xl font-mono ${
-                applicationStatus === "processing"
-                  ? "text-yellow-500"
-                  : applicationStatus === "rejected"
+              className={`font-semibold text-xl font-mono ${applicationStatus === "processing"
+                ? "text-yellow-500"
+                : applicationStatus === "rejected"
                   ? "text-red-500"
                   : "text-blue-500"
-              }`}
+                }`}
             >
               {applicationStatus}
             </span>
@@ -87,10 +98,10 @@ export default function Page() {
               <h2 className="text-2xl font-medium md:-translate-x-6">
                 Our Backbone.
               </h2>
-              <h3 className="text-4xl font-bold md:-translate-x-6">
+              <h3 className="text-4xl font-bold md:-translate-x-6 mb-6">
                 Our Volunteers.
               </h3>
-{/*               <p className="py-4 md:mb-4 lg:mb-0">
+              {/*               <p className="py-4 md:mb-4 lg:mb-0">
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus
                 suscipit laudantium aspernatur odio id, at iste repellendus,
                 laboriosam voluptate dolore quae doloremque et beatae ipsum
@@ -110,8 +121,8 @@ export default function Page() {
               </a>
             </div>
           </div>
-{/*           <div className="flex flex-col">
-            <h3 className="text-xl font-medium">Perks</h3>
+          <div className="flex flex-col">
+            {/* <h3 className="text-xl font-medium">Perks</h3>
             <ul className="list-disc ml-4 my-4 grid grid-cols-2">
               <li>Lorem ipsum</li>
               <li>Lorem ipsum</li>
@@ -120,46 +131,68 @@ export default function Page() {
               <li>Lorem ipsum</li>
               <li>Lorem ipsum</li>
               <li>Lorem ipsum</li>
-            </ul>
+            </ul> */}
             <h3 className="text-xl font-medium">Where do I fit in?</h3>
-            <div className="grid grid-cols-3 gap-3 my-4">
-              {[
-                {
-                  title: "Android",
-                  image:
-                    "https://lh3.googleusercontent.com/9v_pYj1CXETeu4G_id_-dP7b_q8Ys_Ga05S01yvU0aKxRWkzkxJGa2qWXrkWXtYzVsFV4Tuj1aQE6d-KsJGD8fTFJQFrGTLofjL_IknxGreQXGelhAg4",
-                },
-                {
-                  title: "Flutter",
-                  image:
-                    "https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png",
-                },
-                {
-                  title: "Web",
-                  image:
-                    "https://seeklogo.com/images/W/web-dev-logo-E60991AA99-seeklogo.com.png",
-                },
-                {
-                  title: "Content",
-                  image:
-                    "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/color-alt_ZOCajrA.width-1200.format-webp.webp",
-                },
-              ].map((e) => {
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 my-4">
+              {Roles.map((e, index) => {
                 return (
                   <div
-                    key={e.title}
-                    className="flex flex-col items-center border-2 border-[rgb(var(--md-sys-color-on-surface))] p-2 py-3 rounded-xl hover:bg-black dark:hover:bg-white dark:hover:text-black hover:text-white"
+                    onClick={() => openModal(e.jobDescription)}
+                    key={index}
+                    className="flex flex-col items-center border-2 border-[rgb(var(--md-sys-color-on-surface))] p-2 py-3 rounded-xl hover:bg-black dark:hover:bg-white dark:hover:text-black hover:text-white cursor-pointer"
                   >
-                    <img className="w-14 h-14 object-contain" src={e.image} />
-                    <p>{e.title}</p>
+                    <p className="text-center">{e.title}</p>
                   </div>
                 );
               })}
-            </div> */}
-{/*           </div> */}
+            </div>
+          </div>
         </div>
+        {showModal &&(
+          <JobDescriptionModal jobDescription={selectedRole} onClose={closeModal} />
+        )}
         <Toaster />
       </div>
     );
   }
-}
+};
+
+type JobDescriptionModalProps = {
+  jobDescription: string[];
+  onClose: () => void;
+};
+
+const JobDescriptionModal = ({ jobDescription, onClose }: JobDescriptionModalProps) => {
+
+  const modalRef = useRef<HTMLDivElement>(null);
+  const handleClickOutside = (event: MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  return (
+    <div className="fixed inset-0 flex justify-center items-center select-none z-20 bg-black/20 backdrop-blur-sm">
+      <div ref={modalRef} className="w-[85%] flex flex-col gap-3 text-white">
+        <button onClick={onClose} className="place-self-end">
+          <p className="size-10 text-black font-medium">X</p>
+        </button>
+
+        <div className="w-full h-fit py-6 px-4 flex flex-col items-center bg-white rounded-xl space-y-7 border border-gray-400">
+          <p className="text-lg font-semibold text-black underline">Job Description:</p>
+        <ul className="list-disc ml-4 my-4 grid grid-cols-1 md:grid-cols-2">
+            {jobDescription.map((jd, index) => (
+              <li key={index} className="text-black md:w-[90%]">{jd}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};

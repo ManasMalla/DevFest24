@@ -3,7 +3,7 @@ import { db } from "@/lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FormDataProps } from "@/app/registration/page";
-import formFields from "@/lib/data/RegDetails";
+import {formFields} from "@/lib/data/RegDetails";
 // import { Toaster } from "react-hot-toast";
 import { OutlinedTextField } from "material-you-react";
 import { FilledButton } from "material-you-react";

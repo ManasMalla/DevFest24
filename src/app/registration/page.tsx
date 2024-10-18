@@ -1,6 +1,6 @@
 "use client";
 import { auth, storage } from "@/lib/firebase";
-import formFields from "@/lib/data/RegDetails";
+import { formFields } from "@/lib/data/RegDetails";
 import { FormEvent, useEffect, useState } from "react";
 import { db } from "@/lib/firebase";
 import { collection, doc, setDoc } from "firebase/firestore";
