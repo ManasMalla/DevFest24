@@ -64,58 +64,96 @@ export default function Page() {
     applicationStatus: "processing",
     domains: [],
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const profilePicture = ref(storage, `profilePictures/${userId}.png`);
-    const resume = ref(storage, `resumes/${userId}.pdf`);
 
     if (formData.profilePicture == null || formData.resume == null) {
       toast.error("Please upload profile picture and resume");
       return;
     }
-    await uploadBytes(profilePicture, formData.profilePicture as File);
-    await uploadBytes(resume, formData.resume as File);
 
+    setLoading(true);
+    const profilePicture = ref(storage, `profilePictures/${userId}.png`);
+    const resume = ref(storage, `resumes/${userId}.pdf`);
     const userRef = doc(collection(db, "users"), userId);
 
-    const completeRegistration = async () => {
-      const profileURL = await getDownloadURL(profilePicture);
-      const resumeURL = await getDownloadURL(resume);
-      console.log("profile URL =", profileURL);
-      console.log("Resume URL =", resumeURL);
 
-      setDoc(
-        userRef,
-        {
-          registrationDetails: {
-            ...formData,
-            profilePicture: profileURL,
-            resume: resumeURL
-          },
-          registration: true,
-          email: auth.currentUser?.email,
-        },
-      );
+    // const completeRegistration = async () => {
 
-      await axios.get(`https://us-central1-devfest-2024-64eb1.cloudfunctions.net/volunteerApplicationSubmittedEmail?name=${formData.name}&email=${user?.email}&data=${JSON.stringify(
-        {
-          ...formData,
-          profilePicture: profileURL.split('&token')[0],
-          profilePictureToken: profileURL.split('&token')[1],
-          resume: resumeURL.split('&token')[0],
-          resumeToken: resumeURL.split('&token')[1],
-        })}`)
-    }
+    //   await uploadBytes(profilePicture, formData.profilePicture as File);
+    //   await uploadBytes(resume, formData.resume as File);
+
+    //   const profileURL = await getDownloadURL(profilePicture);
+    //   const resumeURL = await getDownloadURL(resume);
+    //   console.log("profile URL =", profileURL);
+    //   console.log("Resume URL =", resumeURL);
+
+    //   setDoc(
+    //     userRef,
+    //     {
+    //       registrationDetails: {
+    //         ...formData,
+    //         profilePicture: profileURL,
+    //         resume: resumeURL
+    //       },
+    //       registration: true,
+    //       email: auth.currentUser?.email,
+    //     },
+    //   );
+
+    //   await axios.get(`https://us-central1-devfest-2024-64eb1.cloudfunctions.net/volunteerApplicationSubmittedEmail?name=${formData.name}&email=${user?.email}&data=${JSON.stringify(
+    //     {
+    //       ...formData,
+    //       profilePicture: profileURL.split('&token')[0],
+    //       profilePictureToken: profileURL.split('&token')[1],
+    //       resume: resumeURL.split('&token')[0],
+    //       resumeToken: resumeURL.split('&token')[1],
+    //     })}`)
+    // }
+
 
     try {
       await toast.promise(
-        completeRegistration(),
+        (async () => {
+          await uploadBytes(profilePicture, formData.profilePicture as File);
+          await uploadBytes(resume, formData.resume as File);
+
+          const [profileURL, resumeURL] = await Promise.all([
+            getDownloadURL(profilePicture),
+            getDownloadURL(resume),
+          ]);
+
+          await setDoc(userRef, {
+            registrationDetails: {
+              ...formData,
+              profilePicture: profileURL,
+              resume: resumeURL,
+            },
+            registration: true,
+            email: auth.currentUser?.email,
+          });
+
+          await axios.get(
+            `https://us-central1-devfest-2024-64eb1.cloudfunctions.net/volunteerApplicationSubmittedEmail`,
+            {
+              params: {
+                name: formData.name,
+                email: user?.email,
+                data: JSON.stringify({
+                  ...formData,
+                  profilePicture: profileURL.split("&token")[0],
+                  resume: resumeURL.split("&token")[0],
+                }),
+              }
+            }
+          );
+        })(),
         {
           loading: "Submitting Registration...",
-          success: "Registration Successful",
-          error: "Please try again!",
+          success: "Registration Successful!",
+          error: "Submission failed. Please try again!",
         }
       );
     } catch (error) {
@@ -264,7 +302,7 @@ export default function Page() {
                 )}
               </div>
             ))}
-            <FilledButton>Submit</FilledButton>
+            <FilledButton onClick={() => {}} disabled={loading}>Submit</FilledButton>
           </form>
         </div>
       </div>

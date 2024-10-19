@@ -8,6 +8,12 @@ import { auth } from "@/lib/firebase";
 export default function Home() {
   const router = useRouter();
   const user = useAuthContext();
+
+  const handleInstagramRedirect = () => {
+    const newWindow = window.open(location.href, "_blank");
+    if (newWindow) newWindow.opener = null;
+  };
+  
   return (
     <div className="p-4 flex flex-col md:flex-row items-center">
       <div className="w-full flex flex-col items-center">
@@ -31,7 +37,13 @@ export default function Home() {
             </button>
             <button
               onClick={async () => {
-                // alert("Check back soon.. !!!");
+                var ua = navigator.userAgent || navigator.vendor || (window as any)['opera'];
+                var isInstagram = (ua.indexOf('Instagram') > -1) ? true : false;
+                if(isInstagram){
+                  alert('Please open a standalone Browser like Chrome or Opera etc...');
+                  return handleInstagramRedirect();
+                }
+
                 if (user) {
                   router.push("/volunteering");
                   return;
