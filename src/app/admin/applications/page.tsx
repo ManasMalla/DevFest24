@@ -301,11 +301,11 @@ function PopupModal({
           >
             Approve
           </button> */}
-          <FilledButton disabled containerColor="rgb(22 163 74)">
+          <FilledButton onClick={()=> {}} disabled containerColor="rgb(22 163 74)">
             <p>Approve</p>
           </FilledButton>
 
-          <FilledButton disabled containerColor="rgb(220 38 38)">
+          <FilledButton onClick={()=> {}} disabled containerColor="rgb(220 38 38)">
             <p>Reject</p>
           </FilledButton>
 

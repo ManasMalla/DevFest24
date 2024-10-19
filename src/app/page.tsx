@@ -37,8 +37,8 @@ export default function Home() {
             </button>
             <button
               onClick={async () => {
-                var ua = navigator.userAgent || navigator.vendor || (window as any)['opera'];
-                var isInstagram = (ua.indexOf('Instagram') > -1) ? true : false;
+                const ua = navigator.userAgent || navigator.vendor;
+                const isInstagram = (ua.indexOf('Instagram') > -1) ? true : false;
                 if(isInstagram){
                   alert('Please open a standalone Browser like Chrome or Opera etc...');
                   return handleInstagramRedirect();

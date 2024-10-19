@@ -53,7 +53,7 @@ export default function AdminPage() {
             labelText={"Password"}
           />
         </div>
-        <FilledButton>Login</FilledButton>
+        <FilledButton onClick={() => {}}>Login</FilledButton>
       </form>
     </div>
   );
