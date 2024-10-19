@@ -3,10 +3,12 @@ import { db } from "@/lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FormDataProps } from "@/app/registration/page";
-import {formFields} from "@/lib/data/RegDetails";
+import { formFields } from "@/lib/data/RegDetails";
 // import { Toaster } from "react-hot-toast";
 import { OutlinedTextField } from "material-you-react";
 import { FilledButton } from "material-you-react";
+import { useAuthContext } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const DomainOptions = [
   { value: "All", text: "All" },
@@ -29,6 +31,8 @@ type ApplicationCollection = {
 const ITEMS_PER_PAGE = 10;
 
 export default function Page() {
+  const user = useAuthContext();
+  const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [selectedApplication, setSelectedApplication] =
     useState<ApplicationCollection | null>(null);
@@ -44,18 +48,26 @@ export default function Page() {
   const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    const usersRef = collection(db, "users");
-    const unsubscribe = onSnapshot(usersRef, (snapshot) => {
-      const retrievedData = snapshot.docs.map(
-        (doc) => doc.data() as ApplicationCollection
-      );
-      setAllApplications(retrievedData);
-      setFilteredApplications(retrievedData.slice(0, ITEMS_PER_PAGE));
-      setTotalPages(Math.ceil(retrievedData.length / ITEMS_PER_PAGE));
-    });
+    if (
+      user?.uid != "NmZwEUEvIQbpwJZ1jlrvZ47OH7i1" &&
+      user?.uid != "oBYmZwFXDeS0O2uDryFuhw5ujd33"
+    ) {
+      alert("You are not authorized to view this page");
+      router.push("/");
+    } else {
+      const usersRef = collection(db, "users");
+      const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+        const retrievedData = snapshot.docs.map(
+          (doc) => doc.data() as ApplicationCollection
+        );
+        setAllApplications(retrievedData);
+        setFilteredApplications(retrievedData.slice(0, ITEMS_PER_PAGE));
+        setTotalPages(Math.ceil(retrievedData.length / ITEMS_PER_PAGE));
+      });
 
-    return () => unsubscribe();
-  });
+      return () => unsubscribe();
+    }
+  }, [user]);
 
   const filterApplications = useCallback(() => {
     const filtered = allApplications.filter((application) => {
@@ -64,7 +76,7 @@ export default function Page() {
         application.registrationDetails.domains.includes(selectedDomain);
       const matchesSearch = application.registrationDetails.name
         .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+        .includes(searchTerm.toLowerCase());
       return matchesDomain && matchesSearch;
     });
 
@@ -172,13 +184,14 @@ export default function Page() {
                   {item.registrationDetails.domains}
                 </td>
                 <td
-                  className={`x-6 py-4 font-mono ${item.registrationDetails.applicationStatus === "processing"
-                    ? "text-yellow-500"
-                    : item.registrationDetails.applicationStatus ===
-                      "rejected"
+                  className={`x-6 py-4 font-mono ${
+                    item.registrationDetails.applicationStatus === "processing"
+                      ? "text-yellow-500"
+                      : item.registrationDetails.applicationStatus ===
+                        "rejected"
                       ? "text-red-500"
                       : "text-green-500"
-                    }`}
+                  }`}
                 >
                   {item.registrationDetails.applicationStatus}
                 </td>
@@ -250,15 +263,13 @@ function PopupModal({
 
         <div className="w-full max-h-[500px] overflow-y-scroll py-6 px-4 flex flex-col items-center bg-white rounded-xl space-y-7 border border-gray-400">
           <div className="h-px w-[80%] bg-gray-500 opacity-70" />
-          <div
-            className="w-full flex-justify-start items-start gap-5 "
-          >
+          <div className="w-full flex-justify-start items-start gap-5 ">
             <p className="w-full text-base font-medium tracking-wider text-black">
               Email
-            </p>  
+            </p>
             <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
-                  {application.email}
-                </p>
+              {application.email}
+            </p>
           </div>
           {formFields.map((item, index) => (
             <div
@@ -268,24 +279,30 @@ function PopupModal({
               <p className="w-full text-base font-medium tracking-wider text-black">
                 {item.label}
               </p>
-              {
-                item.name === 'resume'
-                  ? <a href={`${application?.registrationDetails[item.name as keyof FormDataProps]?.toString()}`}
-                    className="text-blue-500 underline"
-                  >Click Here</a>
-                  : item.name === 'profilePicture'
-                    ? <img
-                      src={`${application?.registrationDetails[item.name as keyof FormDataProps]?.toString()}`}
-                      alt="Profile Pic"
-                      className="size-28 rounded-full m-4 object-cover"
-                    />
-                    : <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
-                      {application?.registrationDetails[
-                        item.name as keyof FormDataProps
-                      ]?.toString()}
-                    </p>
-
-              }
+              {item.name === "resume" ? (
+                <a
+                  href={`${application?.registrationDetails[
+                    item.name as keyof FormDataProps
+                  ]?.toString()}`}
+                  className="text-blue-500 underline"
+                >
+                  Click Here
+                </a>
+              ) : item.name === "profilePicture" ? (
+                <img
+                  src={`${application?.registrationDetails[
+                    item.name as keyof FormDataProps
+                  ]?.toString()}`}
+                  alt="Profile Pic"
+                  className="size-28 rounded-full m-4 object-cover"
+                />
+              ) : (
+                <p className="w-full text-sm font-normal tracking-wide text-gray-500 text-wrap">
+                  {application?.registrationDetails[
+                    item.name as keyof FormDataProps
+                  ]?.toString()}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -301,11 +318,19 @@ function PopupModal({
           >
             Approve
           </button> */}
-          <FilledButton onClick={()=> {}} disabled containerColor="rgb(22 163 74)">
+          <FilledButton
+            onClick={() => {}}
+            disabled
+            containerColor="rgb(22 163 74)"
+          >
             <p>Approve</p>
           </FilledButton>
 
-          <FilledButton onClick={()=> {}} disabled containerColor="rgb(220 38 38)">
+          <FilledButton
+            onClick={() => {}}
+            disabled
+            containerColor="rgb(220 38 38)"
+          >
             <p>Reject</p>
           </FilledButton>
 
