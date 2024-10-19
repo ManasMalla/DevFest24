@@ -48,6 +48,7 @@ export default function Page() {
   const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
+    if (!user) return;
     if (
       user?.uid != "NmZwEUEvIQbpwJZ1jlrvZ47OH7i1" &&
       user?.uid != "oBYmZwFXDeS0O2uDryFuhw5ujd33"
