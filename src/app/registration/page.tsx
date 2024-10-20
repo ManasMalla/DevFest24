@@ -79,41 +79,6 @@ export default function Page() {
     const resume = ref(storage, `resumes/${userId}.pdf`);
     const userRef = doc(collection(db, "users"), userId);
 
-
-    // const completeRegistration = async () => {
-
-    //   await uploadBytes(profilePicture, formData.profilePicture as File);
-    //   await uploadBytes(resume, formData.resume as File);
-
-    //   const profileURL = await getDownloadURL(profilePicture);
-    //   const resumeURL = await getDownloadURL(resume);
-    //   console.log("profile URL =", profileURL);
-    //   console.log("Resume URL =", resumeURL);
-
-    //   setDoc(
-    //     userRef,
-    //     {
-    //       registrationDetails: {
-    //         ...formData,
-    //         profilePicture: profileURL,
-    //         resume: resumeURL
-    //       },
-    //       registration: true,
-    //       email: auth.currentUser?.email,
-    //     },
-    //   );
-
-    //   await axios.get(`https://us-central1-devfest-2024-64eb1.cloudfunctions.net/volunteerApplicationSubmittedEmail?name=${formData.name}&email=${user?.email}&data=${JSON.stringify(
-    //     {
-    //       ...formData,
-    //       profilePicture: profileURL.split('&token')[0],
-    //       profilePictureToken: profileURL.split('&token')[1],
-    //       resume: resumeURL.split('&token')[0],
-    //       resumeToken: resumeURL.split('&token')[1],
-    //     })}`)
-    // }
-
-
     try {
       await toast.promise(
         (async () => {
@@ -186,16 +151,26 @@ export default function Page() {
                 {item.type === "text" ||
                   item.type === "tel" ||
                   item.type === "textarea" ? (
-                  <OutlinedTextField
-                    key={index}
-                    value={
-                      (formData[item.name as keyof FormDataProps] as string) ||
-                      ""
+                  <>
+                    <OutlinedTextField
+                      key={index}
+                      value={
+                        (formData[item.name as keyof FormDataProps] as string) ||
+                        ""
+                      }
+                      type={item.type == "textarea" ? "textarea" : ""}
+                      onValueChange={(e) => handleChange(item.name, e)}
+                      labelText={item.label}
+                    />
+                    {
+                      item.name === 'gdgDevLink'
+                        ? <p className="text-sm">
+                          *A Google Developer Profile makes it easy to showcase your skills, learnings and badges. If you don&#39;t have one, you create one <a href="https://developers.google.com/profile/" className="text-blue-500 underline">here</a>
+                          </p>
+                        :
+                        ''
                     }
-                    type={item.type == "textarea" ? "textarea" : ""}
-                    onValueChange={(e) => handleChange(item.name, e)}
-                    labelText={item.label}
-                  />
+                  </>
                 ) : item.type === "radio" ? (
                   <div>
                     <p>{item.label}</p>
@@ -302,7 +277,7 @@ export default function Page() {
                 )}
               </div>
             ))}
-            <FilledButton onClick={() => {}} disabled={loading}>Submit</FilledButton>
+            <FilledButton onClick={() => { }} disabled={loading}>Submit</FilledButton>
           </form>
         </div>
       </div>
